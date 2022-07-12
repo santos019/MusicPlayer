@@ -1,0 +1,205 @@
+[
+    {
+        "title": "YOU AND I",
+        "replaytime": 10,
+        "artist": "WSG워너비 조별경연 (대청봉)",
+        "album": "WSG워너비 조별경연",
+        "thumbnail": "./assets/img/thumb/10954279_20220527162320_500.jpeg"
+    },
+    {
+        "title": "행복한 나를",
+        "replaytime": 5,
+        "artist": "WSG워너비 조별경연 (신성봉)",
+        "album": "WSG워너비 조별경연",
+        "thumbnail": "./assets/img/thumb/10954279_20220527162320_500.jpeg"
+    },
+    {
+        "title": "사랑의 인사",
+        "replaytime": 10,
+        "artist": "WSG워너비 조별경연 (비로봉)",
+        "album": "WSG워너비 조별경연",
+        "thumbnail": "./assets/img/thumb/10954279_20220527162320_500.jpeg"
+    },
+    {
+        "title": "Break Away",
+        "replaytime": 10,
+        "artist": "WSG워너비 조별경연 (할미봉)",
+        "album": "WSG워너비 조별경연",
+        "thumbnail": "./assets/img/thumb/10954279_20220527162320_500.jpeg"
+    },
+    {
+        "title": "어마어마해",
+        "replaytime": 10,
+        "artist": "모모랜드 (MOMOLAND)",
+        "album": "어마어마해",
+        "thumbnail": "./assets/img/thumb/10058095_500.jpeg"
+    },
+    {
+        "title": "상상더하기",
+        "replaytime": 20,
+        "artist": "라붐 (LABOUM)",
+        "album": "Fresh Adventure",
+        "thumbnail": "./assets/img/thumb/2677681_500.jpeg"
+    },
+    {
+        "title": "라일락",
+        "replaytime": 20,
+        "artist": "아이유",
+        "album": "IU 5th Album 'LILAC'",
+        "thumbnail": "./assets/img/thumb/10554246_20210325161233_500.jpeg"
+    },
+    {
+        "title": "Flu",
+        "replaytime": 20,
+        "artist": "아이유",
+        "album": "IU 5th Album 'LILAC'",
+        "thumbnail": "./assets/img/thumb/10554246_20210325161233_500.jpeg"
+    },
+    {
+        "title": "Coin",
+        "replaytime": 3,
+        "artist": "아이유",
+        "album": "IU 5th Album 'LILAC'",
+        "thumbnail": "./assets/img/thumb/10554246_20210325161233_500.jpeg"
+    },
+    {
+        "title": "봄 안녕 봄",
+        "replaytime": 3,
+        "artist": "아이유",
+        "album": "IU 5th Album 'LILAC'",
+        "thumbnail": "./assets/img/thumb/10554246_20210325161233_500.jpeg"
+    },
+    {
+        "title": "Celebrity",
+        "replaytime": 3,
+        "artist": "아이유",
+        "album": "IU 5th Album 'LILAC'",
+        "thumbnail": "./assets/img/thumb/10554246_20210325161233_500.jpeg"
+    },
+    {
+        "title": "돌림노래 (Feat. DEAN)",
+        "replaytime": 3,
+        "artist": "아이유",
+        "album": "IU 5th Album 'LILAC'",
+        "thumbnail": "./assets/img/thumb/10554246_20210325161233_500.jpeg"
+    },
+    {
+        "title": "빈 컵 (Empty Cup)",
+        "replaytime": 3,
+        "artist": "아이유",
+        "album": "IU 5th Album 'LILAC'",
+        "thumbnail": "./assets/img/thumb/10554246_20210325161233_500.jpeg"
+    },
+    {
+        "title": "어푸 (Ah puh)",
+        "replaytime": 3,
+        "artist": "아이유",
+        "album": "IU 5th Album 'LILAC'",
+        "thumbnail": "./assets/img/thumb/10554246_20210325161233_500.jpeg"
+    },
+    {
+        "title": "에필로그",
+        "replaytime": 3,
+        "artist": "아이유",
+        "album": "IU 5th Album 'LILAC'",
+        "thumbnail": "./assets/img/thumb/10554246_20210325161233_500.jpeg"
+    },
+    {
+        "title": "드라마",
+        "replaytime": 3,
+        "artist": "아이유",
+        "album": "조각집",
+        "thumbnail": "./assets/img/thumb/10827816_20211229143632_500.jpeg"
+    },
+    {
+        "title": "정거장",
+        "replaytime": 3,
+        "artist": "아이유",
+        "album": "조각집",
+        "thumbnail": "./assets/img/thumb/10827816_20211229143632_500.jpeg"
+    },
+    {
+        "title": "겨울잠",
+        "replaytime": 3,
+        "artist": "아이유",
+        "album": "조각집",
+        "thumbnail": "./assets/img/thumb/10827816_20211229143632_500.jpeg"
+    },
+    {
+        "title": "너",
+        "replaytime": 3,
+        "artist": "아이유",
+        "album": "조각집",
+        "thumbnail": "./assets/img/thumb/10827816_20211229143632_500.jpeg"
+    },
+    {
+        "title": "러브레터",
+        "replaytime": 3,
+        "artist": "아이유",
+        "album": "조각집",
+        "thumbnail": "./assets/img/thumb/10827816_20211229143632_500.jpeg"
+    },
+    {
+        "title": "unlucky",
+        "replaytime": 3,
+        "artist": "아이유",
+        "album": "Love poem",
+        "thumbnail": "./assets/img/thumb/10346650_500.jpeg"
+    },
+    {
+        "title": "그 사람",
+        "replaytime": 3,
+        "artist": "아이유",
+        "album": "Love poem",
+        "thumbnail": "./assets/img/thumb/10346650_500.jpeg"
+    },
+    {
+        "title": "Blueming",
+        "replaytime": 3,
+        "artist": "아이유",
+        "album": "Love poem",
+        "thumbnail": "./assets/img/thumb/10346650_500.jpeg"
+    },
+    {
+        "title": "시간의 바깥",
+        "replaytime": 3,
+        "artist": "아이유",
+        "album": "Love poem",
+        "thumbnail": "./assets/img/thumb/10346650_500.jpeg"
+    },
+    {
+        "title": "자장가",
+        "replaytime": 3,
+        "artist": "아이유",
+        "album": "Love poem",
+        "thumbnail": "./assets/img/thumb/10346650_500.jpeg"
+    },
+    {
+        "title": "Love poem",
+        "replaytime": 3,
+        "artist": "아이유",
+        "album": "Love poem",
+        "thumbnail": "./assets/img/thumb/10346650_500.jpeg"
+    },
+    {
+        "title": "삐삐",
+        "replaytime": 20,
+        "artist": "아이유",
+        "album": "삐삐",
+        "thumbnail": "./assets/img/thumb/10210535_500.jpeg"
+    },
+    {
+        "title": "밤편지",
+        "replaytime": 3,
+        "artist": "아이유",
+        "album": "밤편지",
+        "thumbnail": "./assets/img/thumb/10047890_500.jpeg"
+    },
+    {
+        "title": "내 손을 잡아",
+        "replaytime": 3,
+        "artist": "아이유",
+        "album": "최고의 사랑 OST Part.4",
+        "thumbnail": "./assets/img/thumb/optimize.jpeg"
+    }
+]

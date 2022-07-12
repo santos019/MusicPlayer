@@ -6,9 +6,9 @@
 <script>
 import Player from './views/Player.vue'
 export default {
-  components: {
-    Player
-  }
+    components: {
+        Player
+    }
 }
 </script>
 <style>

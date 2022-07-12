@@ -16,10 +16,10 @@
 import PlayerController from '../components/PlayerController.vue'
 import PlayerList from '../components/PlayerList.vue'
 export default {
-  components: {
-    PlayerController,
-    PlayerList
-  }
+    components: {
+        PlayerController,
+        PlayerList
+    }
 }
 </script>
 
@@ -36,7 +36,7 @@ export default {
 }
 .player-body-container{
     width: 100%;
-    height: 400px;
+    height: 310px;
     background-color: blueviolet;
 }
 </style>
