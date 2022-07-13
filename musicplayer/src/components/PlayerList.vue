@@ -9,21 +9,35 @@
         </div>
     </div>
     <div class="playerList-list-sidmenu-container">
-      리스트순
+      <div class="playerList-list-sidememu-order">
+        리스트순
+      </div>
+      <div class="playerList-list-sidemenu-makePlayList">
+        추가
+      </div>
+      <div class="playerList-list-sidemenu-search" @click="()=> {searchOffset = !searchOffset}">
+        검색
+      </div>
+      <transition name="fade">
+       <input v-show="searchOffset" class="playerList-list-sidemenu-search-box"/>
+      </transition>
     </div>
     <div class="playerList-list-mylist-container">
       <div class="playerList-list-mylist-list-container">
         <transition name="fade">
           <div v-if=menuOffset class="playerList-list-mylist-list-nowPlayList">
             <li v-for="(data, index) in baseList" :key="index" class="playerList-list-mylist-list-lists">
-              <img :src="(data.thumbnail)" class="playerList-list-mylist-list-lists-img"/>
-              <div class="playList-list-mylist-list-datas">
+              <img :src="(data.thumbnail)" class="playerList-list-mylist-list-lists-img"  @click="listClick(data)"/>
+              <div class="playList-list-mylist-list-datas"  @click="listClick(data)">
                 <div class="playList-list-mylist-list-list-artist">
                   {{ data.artist }}
                 </div>
                 <div class="playList-list-mylist-list-list-title">
                   {{ data.title }}
                 </div>
+              </div>
+              <div class="playList-list-mylist-list-remove-container" @click="makeArr(data.id)">
+                <i class="fa-solid fa-x"></i>
               </div>
             </li>
           </div>
@@ -42,7 +56,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
+import bus from '../util/bus.js'
+
 export default {
     computed: {
         ...mapGetters(['baseList'])
@@ -53,12 +69,20 @@ export default {
     data () {
         return {
             menuOffset: true,
+            searchOffset: false,
             testDatas: null
         }
     },
     methods: {
-        makeImg (url) {
-            return ('@' + url)
+        ...mapMutations(['SET_CURRENTMUSIC', 'REMOVE_INDEX']),
+        listClick (data) {
+            this.SET_CURRENTMUSIC(data)
+            bus.$emit('moveMusic')
+        },
+        makeArr (data) {
+            console.log('ddd')
+            const arr = [`${data}`]
+            this.REMOVE_INDEX(arr)
         }
     }
 }
@@ -138,6 +162,10 @@ export default {
   list-style: none;
   flex-direction: row;
   display: flex;
+  cursor: pointer;
+}
+.playerList-list-mylist-list-lists:hover{
+  opacity: 0.6;
 }
 .playerList-list-mylist-list-lists-img{
   width: 50px;
@@ -148,12 +176,40 @@ export default {
   background-color: aqua;
 }
 .playList-list-mylist-list-list-title{
-  background-color: blue;
+  background-color: rgb(255, 183, 217);
   display: block;
 }
 .playList-list-mylist-list-datas{
-  width: 350px;
+  width: 305px;
   background-color: beige;
 
+}
+.playerList-list-sidememu-order{
+  display: inline;
+  background-color: antiquewhite;
+}
+.playerList-list-sidemenu-search{
+  display: inline;
+  background-color: burlywood;
+  float: right;
+  cursor: pointer;
+
+}
+.playerList-list-sidemenu-makePlayList{
+  display: inline;
+  background-color: cadetblue;
+  float: right;
+  cursor: pointer;
+}
+.playerList-list-sidemenu-search-box{
+  display: inline;
+  background-color: yellow;
+  float:right;
+  margin-right: 5px;
+}
+.playList-list-mylist-list-remove-container{
+  width: auto;
+  line-height: 3;
+  margin-left: 7px;
 }
 </style>

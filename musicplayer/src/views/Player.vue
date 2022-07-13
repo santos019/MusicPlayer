@@ -15,6 +15,7 @@
 <script>
 import PlayerController from '../components/PlayerController.vue'
 import PlayerList from '../components/PlayerList.vue'
+
 export default {
     components: {
         PlayerController,
@@ -36,7 +37,7 @@ export default {
 }
 .player-body-container{
     width: 100%;
-    height: 310px;
+    height: 340px;
     background-color: blueviolet;
 }
 </style>
