@@ -15,11 +15,19 @@
 <script>
 import PlayerController from '../components/PlayerController.vue'
 import PlayerList from '../components/PlayerList.vue'
-
+import { mapMutations } from 'vuex'
 export default {
     components: {
         PlayerController,
         PlayerList
+    },
+    created () {
+        this.SET_CURRENTMUSIC_INIT()
+    },
+    methods: {
+        ...mapMutations([
+            'SET_CURRENTMUSIC_INIT'
+        ])
     }
 }
 </script>

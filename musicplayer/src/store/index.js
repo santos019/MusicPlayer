@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import musicData from '@/assets/musicData.json'
 import { SET_CURRNETMUSIC,
+    SET_CURRENTMUSIC_INIT,
     SET_CURRNETMUSIC_OBJECT,
     REMOVE_INDEX } from './mutation-type'
 import { findNextMucic, findBeforeMusic } from '../lib/index'
@@ -11,7 +12,7 @@ export default new Vuex.Store({
     state: {
         baseList: musicData,
         allPlayList: [],
-        currentMusic: JSON.parse(localStorage.getItem('currentMusic')) || {}
+        currentMusic: {}
     },
     getters: {
         baseList (state) {
@@ -22,6 +23,20 @@ export default new Vuex.Store({
         }
     },
     mutations: {
+        [SET_CURRENTMUSIC_INIT]: (state) => {
+            if (JSON.parse(localStorage.getItem('currentMusic'))) {
+                state.currentMusic = JSON.parse(localStorage.getItem('currentMusic'))
+            } else if (!JSON.parse(localStorage.getItem('currentMusic')) && state.baseList != null) {
+                const data = {
+                    musicData: state.baseList[0],
+                    musicIndex: 0
+                }
+                state.currentMusic = data
+                localStorage.setItem('currentMusic', JSON.stringify(state.currentMusic))
+            } else {
+                state.currentMusic = null
+            }
+        },
         [SET_CURRNETMUSIC]: (state, music) => {
             const data = {
                 musicData: music,

@@ -1,7 +1,7 @@
 <template>
   <div class="playerController-container">
       <div class="playerController-img-container">
-        <img :src="currentMusic.musicData.thumbnail" class="playerController-img-img">
+        <img v-if="currentMusic" :src="currentMusic.musicData.thumbnail" class="playerController-img-img">
       </div>
       <div class="playerController-heart-container">
             <i @mouseover="isHovering = true"  @mouseout="isHovering = false" v-bind:class="[ false || isHovering ? 'fa-solid fa-heart' : 'fa-regular fa-heart'  ]"></i>
@@ -12,12 +12,12 @@
            <audio id= "loadMusic" preload= 'auto' ref="audioRef">
                <source :src= "loadMusic" type="audio/mp3"/>
            </audio>
-           <div class="playerContoller-playbar-time">
+           <div class="playerContoller-playbar-time" v-if="currentMusic">
                {{makeMusicTimeFuc(Math.floor(currentMusicTime))}}/{{makeMusicTimeFuc(currentMusic.musicData.replaytime || 0)}}
             </div>
       </div>
       <div class="playerController-playbar-data-container">
-          <div class="playerController-playbar-data-musicData-container">
+          <div class="playerController-playbar-data-musicData-container" v-if="currentMusic">
               <div class="playerController-playbar-data-musicData-artist">
                   {{currentMusic.musicData.artist}}
               </div>
@@ -29,9 +29,9 @@
       </div>
       <div class="playerController-playmenu-container">
           <i class="fa-solid fa-repeat"></i>
-          <i class="fa-solid fa-backward-step" @click="()=> { FETCH_BEFOREMUSIC(); moveMusic() }"></i>
+          <i class="fa-solid fa-backward-step" @click="()=> { if (baseList.length != 0) { FETCH_BEFOREMUSIC(); moveMusic() }}"></i>
           <i v-bind:class="[ playButton ? 'fa-solid fa-grip-lines-vertical' : 'fa-solid fa-play' ]" @click="playMusicEnvt"></i>
-          <i class="fa-solid fa-forward-step" @click="()=>{ FETCH_NEXTMUSIC(); moveMusic() }"></i>
+          <i class="fa-solid fa-forward-step" @click="()=>{  if (baseList.length != 0) { FETCH_NEXTMUSIC(); moveMusic() }}"></i>
           <i class="fa-solid fa-shuffle"></i>
       </div>
   </div>
