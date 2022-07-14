@@ -78,7 +78,8 @@ export default {
                 false: {
                     color: 'rgb(192, 191, 189)'
                 }
-            }
+            },
+            setOffset: false
         }
     },
     mounted () {
@@ -140,13 +141,19 @@ export default {
                     this.playButton = false
                     this.currentMusicTime = 0
                     console.log('this.randomList.size', this.randomList.size)
-                    if (this.rotateBtn === 'first' && this.shuffleBtn === false && this.randomList.size !== 0) {
+                    if (this.setOffset === true) {
+                        this.FETCH_RANDOMMUSIC_LIST()
+                        this.playMusicEnvt()
+                        console.log(0)
+                        this.setOffset = false
+                    } else if (this.rotateBtn === 'first' && this.shuffleBtn === false && this.randomList.size !== 0) {
                         this.FETCH_RANDOMMUSIC()
                         this.playMusicEnvt()
                         console.log('1')
                     } else if (this.rotateBtn === 'first' && this.shuffleBtn === false && this.randomList.size === 0) {
                         this.currentMusicTime = 0
-                        // this.shuffleBtn = true
+                        this.shuffleBtn = true
+                        this.setOffset = true
                         console.log('2')
                     } else if (this.rotateBtn === 'second' && this.shuffleBtn === false && this.randomList.size === 0) {
                         this.FETCH_RANDOMMUSIC_LIST()

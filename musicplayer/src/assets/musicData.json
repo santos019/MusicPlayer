@@ -10,7 +10,7 @@
     },
     {
         "title": "행복한 나를",
-        "replaytime": 61,
+        "replaytime": 5,
         "artist": "WSG워너비 조별경연 (신성봉)",
         "album": "WSG워너비 조별경연",
         "thumbnail": "./assets/img/thumb/10954279_20220527162320_500.jpeg",
@@ -19,7 +19,7 @@
     },
     {
         "title": "사랑의 인사",
-        "replaytime": 10,
+        "replaytime": 5,
         "artist": "WSG워너비 조별경연 (비로봉)",
         "album": "WSG워너비 조별경연",
         "thumbnail": "./assets/img/thumb/10954279_20220527162320_500.jpeg",
@@ -28,7 +28,7 @@
     },
     {
         "title": "Break Away",
-        "replaytime": 10,
+        "replaytime": 5,
         "artist": "WSG워너비 조별경연 (할미봉)",
         "album": "WSG워너비 조별경연",
         "thumbnail": "./assets/img/thumb/10954279_20220527162320_500.jpeg",
@@ -37,7 +37,7 @@
     },
     {
         "title": "어마어마해",
-        "replaytime": 10,
+        "replaytime": 5,
         "artist": "모모랜드 (MOMOLAND)",
         "album": "어마어마해",
         "thumbnail": "./assets/img/thumb/10058095_500.jpeg",
@@ -46,7 +46,7 @@
     },
     {
         "title": "상상더하기",
-        "replaytime": 20,
+        "replaytime": 5,
         "artist": "라붐 (LABOUM)",
         "album": "Fresh Adventure",
         "thumbnail": "./assets/img/thumb/2677681_500.jpeg",
@@ -55,7 +55,7 @@
     },
     {
         "title": "라일락",
-        "replaytime": 20,
+        "replaytime": 5,
         "artist": "아이유",
         "album": "IU 5th Album 'LILAC'",
         "thumbnail": "./assets/img/thumb/10554246_20210325161233_500.jpeg",
@@ -64,7 +64,7 @@
     },
     {
         "title": "Flu",
-        "replaytime": 20,
+        "replaytime": 5,
         "artist": "아이유",
         "album": "IU 5th Album 'LILAC'",
         "thumbnail": "./assets/img/thumb/10554246_20210325161233_500.jpeg",
@@ -235,7 +235,7 @@
     },
     {
         "title": "삐삐",
-        "replaytime": 20,
+        "replaytime": 3,
         "artist": "아이유",
         "album": "삐삐",
         "thumbnail": "./assets/img/thumb/10210535_500.jpeg",

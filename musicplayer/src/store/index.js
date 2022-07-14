@@ -102,6 +102,9 @@ export default new Vuex.Store({
             for (let num = 0; num < state.baseList.length; num++) {
                 arrObj.set(arr[num], true)
             }
+            const deletIndex = state.baseList.findIndex(el => el.id === state.currentMusic.musicData.id)
+            console.log(state.baseList[deletIndex].id)
+            arrObj.delete(state.baseList[deletIndex].id)
             // arrObj.set(28, 'test')
             // const iterator = arrObj.keys()
             // console.log(iterator.next().value)
