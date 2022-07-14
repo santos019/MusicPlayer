@@ -143,6 +143,7 @@ export default {
                     console.log('this.randomList.size', this.randomList.size)
                     if (this.setOffset === true) {
                         this.FETCH_RANDOMMUSIC_LIST()
+                        this.FETCH_RANDOMMUSIC()
                         this.playMusicEnvt()
                         console.log(0)
                         this.setOffset = false

@@ -58,14 +58,17 @@ export default new Vuex.Store({
             localStorage.setItem('currentMusic', JSON.stringify(state.currentMusic))
         },
         [REMOVE_INDEX]: (state, removeIds) => {
-            // console.log(removeIds)
             let removeIndex = 0
             for (let id of removeIds) {
-                // console.log('in', id)
                 removeIndex = state.baseList.findIndex(el => String(el.id) === String(id))
                 state.baseList.splice(removeIndex, 1)
-                console.log(state.randomList.delete(Number(id)))
+                state.randomList.delete(Number(id))
             } // 반영하려면 나중에 localStorage에 저장하기
+            for (const value in state.baseList) {
+                state.baseList[value].index = Number(value)
+            }
+            const newCurrentIndex = state.baseList.findIndex(el => el.id === state.currentMusic.musicData.id)
+            state.currentMusic.musicIndex = newCurrentIndex
         },
         [SET_MAP_OBJECT]: (state, data) => {
             state.randomList = data
@@ -76,12 +79,10 @@ export default new Vuex.Store({
     },
     actions: {
         FETCH_NEXTMUSIC ({ commit, state }) {
-            // console.log('ddd')
             const findResult = findNextMucic(state.baseList, state.currentMusic)
             const data = { musicData: state.baseList[findResult] === undefined ? -1 : state.baseList[findResult],
                 musicIndex: findResult
             }
-            // console.log('data', data)
             commit(SET_CURRNETMUSIC_OBJECT, data)
         },
         FETCH_BEFOREMUSIC ({ commit, state }) {
@@ -103,25 +104,17 @@ export default new Vuex.Store({
                 arrObj.set(arr[num], true)
             }
             const deletIndex = state.baseList.findIndex(el => el.id === state.currentMusic.musicData.id)
-            console.log(state.baseList[deletIndex].id)
-            arrObj.delete(state.baseList[deletIndex].id)
-            // arrObj.set(28, 'test')
-            // const iterator = arrObj.keys()
-            // console.log(iterator.next().value)
-            // console.log(iterator.next().value)
+            if (state.baseList[deletIndex]) { arrObj.delete(state.baseList[deletIndex].id) }
             commit(SET_MAP_OBJECT, arrObj)
         },
         FETCH_RANDOMMUSIC ({ commit, state }) {
             const iterator = state.randomList.keys()
             const value = iterator.next().value
-            console.log('value', value)
             const findResult = state.baseList.findIndex(el => el.id === value)
-            console.log('findResult', findResult)
             const data = { musicData: state.baseList[findResult],
-                musicIndex: state.baseList[findResult].index
+                musicIndex: findResult
             }
             commit(REMOVE_INDEX_RANDOMLIST, value)
-            // console.log('data', data)
             commit(SET_CURRNETMUSIC_OBJECT, data)
         }
     }
