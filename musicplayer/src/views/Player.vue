@@ -15,7 +15,7 @@
 <script>
 import PlayerController from '../components/PlayerController.vue'
 import PlayerList from '../components/PlayerList.vue'
-import { mapMutations } from 'vuex'
+import { mapMutations, mapActions } from 'vuex'
 export default {
     components: {
         PlayerController,
@@ -23,10 +23,14 @@ export default {
     },
     created () {
         this.SET_CURRENTMUSIC_INIT()
+        this.FETCH_RANDOMMUSIC_LIST()
     },
     methods: {
         ...mapMutations([
             'SET_CURRENTMUSIC_INIT'
+        ]),
+        ...mapActions([
+            'FETCH_RANDOMMUSIC_LIST'
         ])
     }
 }
@@ -36,16 +40,15 @@ export default {
 .player-container{
     width: 400px;
     height: 98vh;
-    background-color: aqua;
 }
 .player-header-container{
     width: 100%;
     height: 30px;
-    background-color: rgb(39, 200, 39);
+    background-color: #242424;
 }
 .player-body-container{
     width: 100%;
-    height: 340px;
-    background-color: blueviolet;
+    height: 320px;
+    background-color: #242424;
 }
 </style>

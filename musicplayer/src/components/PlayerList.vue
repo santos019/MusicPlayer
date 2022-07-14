@@ -1,10 +1,10 @@
 <template>
   <div class="playerList-list-container">
     <div class="playerList-list-menu-container">
-        <div class="playerList-list-menu-base" @click="()=> {menuOffset = true}">
+        <div class="playerList-list-menu-base" :style="menuOffsetStyle[menuOffset]" @click="()=> {menuOffset = true}">
           현재 재생 리스트
         </div>
-         <div class="playerList-list-menu-playlist" @click="()=> {menuOffset = false}">
+         <div class="playerList-list-menu-playlist" :style="menuOffsetStyle[!menuOffset]" @click="()=> {menuOffset = false}">
           플레이리스트
         </div>
     </div>
@@ -13,10 +13,10 @@
         리스트순
       </div>
       <div class="playerList-list-sidemenu-makePlayList">
-        추가
+        <i class="fa-solid fa-plus"></i>
       </div>
       <div class="playerList-list-sidemenu-search" @click="()=> {searchOffset = !searchOffset}">
-        검색
+        <i class="fa-brands fa-sistrix"></i>
       </div>
       <transition name="fade">
        <input v-show="searchOffset" class="playerList-list-sidemenu-search-box"/>
@@ -29,11 +29,11 @@
             <li v-for="(data, index) in baseList" :key="index" class="playerList-list-mylist-list-lists">
               <img :src="(data.thumbnail)" class="playerList-list-mylist-list-lists-img"  @click="listClick(data)"/>
               <div class="playList-list-mylist-list-datas"  @click="listClick(data)">
-                <div class="playList-list-mylist-list-list-artist">
-                  {{ data.artist }}
-                </div>
                 <div class="playList-list-mylist-list-list-title">
                   {{ data.title }}
+                </div>
+                <div class="playList-list-mylist-list-list-artist">
+                  {{ data.artist }}
                 </div>
               </div>
               <div class="playList-list-mylist-list-remove-container" @click="makeArr(data.id)">
@@ -70,7 +70,17 @@ export default {
         return {
             menuOffset: true,
             searchOffset: false,
-            testDatas: null
+            testDatas: null,
+            menuOffsetStyle: {
+                true: {
+                    backgroundColor: '#111111',
+                    color: 'rgb(217, 215, 213)'
+                },
+                false: {
+                    backgroundColor: '#242424',
+                    color: 'rgb(192, 191, 189)'
+                }
+            }
         }
     },
     methods: {
@@ -104,7 +114,7 @@ export default {
 .playerList-list-sidmenu-container{
   width: 100%;
   height: 25px;
-  background-color: chocolate;
+  background-color: #111111;
 }
 .playerList-list-mylist-container{
   width: 100%;
@@ -119,7 +129,7 @@ export default {
 .playerList-list-mylist-modal-container{
   width: 100%;
   height: 100px;
-  background-color: darkmagenta;
+  background-color: rgb(167, 167, 167);
 }
 .playerList-list-menu-base{
   width: 50%;
@@ -150,15 +160,15 @@ export default {
   opacity: 0;
 }
 .playerList-list-mylist-list-playList{
-  background-color: aqua;
+  background-color: rgb(167, 167, 167);
 }
 .playerList-list-mylist-list-nowPlayList{
-  background-color: rgb(179, 179, 230);
+  background-color: #111111;
   height: 200px;
   overflow-y: auto;
 }
 .playerList-list-mylist-list-lists{
-  border-bottom: 1px solid black;
+  border-bottom: 0.5px solid rgb(108, 108, 108);
   list-style: none;
   flex-direction: row;
   display: flex;
@@ -173,15 +183,20 @@ export default {
 }
 .playList-list-mylist-list-list-artist{
   display: block;
-  background-color: aqua;
+  background-color: #111111;
+  font-size: 12px;
 }
 .playList-list-mylist-list-list-title{
-  background-color: rgb(255, 183, 217);
+  background-color: #111111;
   display: block;
+  font-size: 14px;
+  margin-top: 5px;
 }
 .playList-list-mylist-list-datas{
   width: 305px;
-  background-color: beige;
+  background-color: #111111;
+  margin-left: 10px;
+  color: rgb(167, 167, 167);
 
 }
 .playerList-list-sidememu-order{
@@ -190,26 +205,34 @@ export default {
 }
 .playerList-list-sidemenu-search{
   display: inline;
-  background-color: burlywood;
   float: right;
   cursor: pointer;
-
+  color: rgb(167, 167, 167);
+  margin-right: 5px;
+}
+.playerList-list-sidemenu-search:hover{
+  color: rgb(201, 195, 195);
 }
 .playerList-list-sidemenu-makePlayList{
   display: inline;
-  background-color: cadetblue;
   float: right;
   cursor: pointer;
+  color: rgb(167, 167, 167);
+  margin-right: 7px;
+}
+.playerList-list-sidemenu-makePlayList:hover{
+  color: rgb(201, 195, 195);
 }
 .playerList-list-sidemenu-search-box{
   display: inline;
-  background-color: yellow;
+  background-color: rgb(167, 167, 167);
   float:right;
   margin-right: 5px;
 }
 .playList-list-mylist-list-remove-container{
   width: auto;
   line-height: 3;
-  margin-left: 7px;
+  margin-right: 10px;
+  color: rgb(201, 195, 195);
 }
 </style>

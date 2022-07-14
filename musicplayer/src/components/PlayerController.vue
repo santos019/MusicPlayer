@@ -12,9 +12,6 @@
            <audio id= "loadMusic" preload= 'auto' ref="audioRef">
                <source :src= "loadMusic" type="audio/mp3"/>
            </audio>
-           <div class="playerContoller-playbar-time" v-if="currentMusic">
-               {{makeMusicTimeFuc(Math.floor(currentMusicTime))}}/{{makeMusicTimeFuc(currentMusic.musicData.replaytime || 0)}}
-            </div>
       </div>
       <div class="playerController-playbar-data-container">
           <div class="playerController-playbar-data-musicData-container" v-if="currentMusic">
@@ -25,14 +22,18 @@
                   {{currentMusic.musicData.title}}
               </div>
           </div>
-          <i class="fa-solid fa-volume-off"></i>
+          <div class="playerContoller-playbar-time" v-if="currentMusic">
+               {{makeMusicTimeFuc(Math.floor(currentMusicTime))}}/{{makeMusicTimeFuc(currentMusic.musicData.replaytime || 0)}}
+            </div>
+            <i class="fa-solid fa-volume-off"></i>
       </div>
       <div class="playerController-playmenu-container">
-          <i class="fa-solid fa-repeat"></i>
+          <i class="fa-solid fa-repeat" :style="rotateImg[rotateBtn]" @click="() => { rotateClickEvnt() }"></i>
+          <!-- <img :src="rotateImg[rotateBtn].img" :style="rotateImg[rotateBtn].style" class="playerController-playermenu-repeat" @click="() => { rotateClickEvnt() }"/> -->
           <i class="fa-solid fa-backward-step" @click="()=> { if (baseList.length != 0) { FETCH_BEFOREMUSIC(); moveMusic() }}"></i>
           <i v-bind:class="[ playButton ? 'fa-solid fa-grip-lines-vertical' : 'fa-solid fa-play' ]" @click="playMusicEnvt"></i>
           <i class="fa-solid fa-forward-step" @click="()=>{  if (baseList.length != 0) { FETCH_NEXTMUSIC(); moveMusic() }}"></i>
-          <i class="fa-solid fa-shuffle"></i>
+          <i class="fa-solid fa-shuffle" :style="shuffleImg[shuffleBtn]" @click="()=>{shuffleBtn = !shuffleBtn}"></i>
       </div>
   </div>
 </template>
@@ -45,30 +46,39 @@ import bus from '../util/bus.js'
 // import myMusic from '../assets/Music/Pray-AnnoDominiBeats.mp3'
 export default {
     computed: {
-        ...mapGetters(['currentMusic', 'baseList'])
+        ...mapGetters(['currentMusic', 'baseList', 'randomList'])
     },
     data () {
         return {
             isHovering: false, // store.item값으로 수정하기,
             loadMusic: testMusic,
             ctx: null,
-            audioElement: null,
             playButton: false,
             playingMusic: null,
             playbarGauge: 0,
             playEndMusic: null,
-            playDuration: 0,
-            testData: [
-                {
-                    title: 'musicTitle',
-                    time: 3.25
+            currentMusicTime: 0,
+            rotateBtn: 'first',
+            shuffleBtn: true,
+            rotateImg: {
+                first: {
+                    opacity: 0.5
                 },
-                {
-                    title: 'musicTitme2',
-                    time: 4.05
+                second: {
+                    color: 'rgb(192, 191, 189)'
+                },
+                third: {
+                    color: 'rgb(240, 74, 74)'
                 }
-            ],
-            currentMusicTime: 0
+            },
+            shuffleImg: {
+                true: {
+                    opacity: 0.5
+                },
+                false: {
+                    color: 'rgb(192, 191, 189)'
+                }
+            }
         }
     },
     mounted () {
@@ -80,8 +90,20 @@ export default {
     methods: {
         ...mapActions([
             'FETCH_NEXTMUSIC',
-            'FETCH_BEFOREMUSIC'
+            'FETCH_BEFOREMUSIC',
+            'FETCH_RANDOMMUSIC',
+            'FETCH_RANDOMMUSIC_LIST'
         ]),
+        rotateClickEvnt () {
+            if (this.rotateBtn === 'first') {
+                this.rotateBtn = 'second'
+                // this.$set(this.rotateShuffleBtn, 0, 'second')
+            } else if (this.rotateBtn === 'second') {
+                this.rotateBtn = 'third'
+            } else {
+                this.rotateBtn = 'first'
+            }
+        },
         makeMusicTimeFuc (time) {
             return makeMusicTime(time)
         },
@@ -96,20 +118,20 @@ export default {
         },
         playMusicEnvt () {
             const loadMusic = this.$refs.audioRef
-            console.log('재생')
-            console.log('duration', loadMusic.duration)
-            console.log('currentTime', loadMusic.currentTime)
+            // console.log('재생')
+            // console.log('duration', loadMusic.duration)
+            // console.log('currentTime', loadMusic.currentTime)
             this.playButton = !this.playButton
             if (this.playButton) { // 노래가 로드 끝나면 실행되는것으로 변경
                 loadMusic.play()
                 const upGauge = 400 / this.currentMusic.musicData.replaytime
-                console.log('upgauge', upGauge)
+                // console.log('upgauge', upGauge)
                 this.playingMusic = setInterval(() => {
-                    console.log('currentTime', this.currentMusicTime)
-                    this.ctx.fillStyle = 'green'
+                    // console.log('currentTime', this.currentMusicTime)
+                    this.ctx.fillStyle = 'rgb(240, 74, 74)'
                     this.playbarGauge = this.currentMusicTime * upGauge
                     this.ctx.fillRect(0, 0, this.playbarGauge, 100)
-                    console.log('gautge', this.playbarGauge)
+                    // console.log('gautge', this.playbarGauge)
                     this.currentMusicTime = this.currentMusicTime + 0.1
                 }, 100)
                 this.playEndMusic = setTimeout(() => {
@@ -117,11 +139,30 @@ export default {
                     this.ctx.clearRect(0, 0, 400, 100)
                     this.playButton = false
                     this.currentMusicTime = 0
-                    this.FETCH_NEXTMUSIC()
-                    if (this.baseList.length !== 0) {
+                    console.log('this.randomList.size', this.randomList.size)
+                    if (this.rotateBtn === 'first' && this.shuffleBtn === false && this.randomList.size !== 0) {
+                        this.FETCH_RANDOMMUSIC()
                         this.playMusicEnvt()
+                        console.log('1')
+                    } else if (this.rotateBtn === 'first' && this.shuffleBtn === false && this.randomList.size === 0) {
+                        this.currentMusicTime = 0
+                        // this.shuffleBtn = true
+                        console.log('2')
+                    } else if (this.rotateBtn === 'second' && this.shuffleBtn === false && this.randomList.size === 0) {
+                        this.FETCH_RANDOMMUSIC_LIST()
+                        this.playMusicEnvt()
+                        console.log('3')
+                    } else if (this.rotateBtn === 'third') {
+                        this.currentMusicTime = 0
+                        this.playMusicEnvt()
+                        console.log('4')
+                    } else if ((this.rotateBtn === 'second' || (this.currentMusic.musicIndex !== this.baseList.length - 1)) && this.baseList.length !== 0) {
+                        this.FETCH_NEXTMUSIC()
+                        this.playMusicEnvt()
+                        console.log('5')
                     } else {
                         this.currentMusicTime = 0
+                        console.log('6')
                     }
                 }, (this.currentMusic.musicData.replaytime - this.currentMusicTime) * 1000 + 300)
             } else {
@@ -142,7 +183,7 @@ export default {
 .playerController-img-container {
     width: 100%;
     height: 180px;
-    background-color: brown;
+    background-color: #111111;
 }
 .playerController-img-img{
     width: 36%;
@@ -153,33 +194,43 @@ export default {
     display: flex;
     justify-content: center;
     height: 30px;
-    background-color: aquamarine;
+    color: rgb(240, 74, 74);
+    background-color: #111111;
 }
 .playerController-playbar-container{
     width: 100%;
-    height: 30px;
-    background-color: chartreuse;
+    height: 18px;
+    background-color: #242424;
 }
 .playerController-playmenu-container{
     width: 100%;
     height: auto;
-    background-color: rgb(116, 89, 53);
+    background-color: #242424;
     display: flex;
+    margin-top: 7px;
     justify-content: space-around;
     align-items: center;
 }
 .playerController-heart-container > i {
-    background: saddlebrown;
     cursor: pointer;
     font-size: 23px;
 }
 .playerController-playmenu-container > i {
-    background-color: aqua;
+    background-color: #242424;
     font-size: 30px;
     cursor: pointer;
 }
+.fa-solid.fa-repea{
+    /* background-color: aqua; */
+    /* opacity: 0.6; */
+    width: 30px;
+    cursor: pointer;
+}
+.fa-solid.fa-repea:hover {
+    opacity: 1;
+}
 .playerController-playmenu-container > i:hover {
-    background-color: azure;
+    color: rgb(192, 191, 189);
 }
 .playerController-playmenu-container i:nth-child(3) {
     font-size: 38px;
@@ -187,40 +238,52 @@ export default {
 .playerController-playbar-canvas{
     width: 400px;
     height: 6px;
-    background-color: azure;
+    background-color: #000000;
+    margin-bottom: 10px;
 }
 .playerController-playbar-data-container{
     width: 100%;
-    height: 40px;
-    background-color: burlywood;
+    height: 30px;
+    background-color: #242424;
     display: flex;
 }
 .playerContoller-playbar-time{
     float: right;
-    font-size: 20px;
-    background-color: rgb(185, 185, 207);
+    width: 20%;
+    font-size: 14px;
+    text-align: center;
+    line-height: 0.7;
+    margin-left: 40px;
+    background-color: #242424;
+    color: rgb(205, 205, 205);
 }
 .playerController-playbar-data-musicData-container{
-    width: 90%;
+    width: 70%;
     height: 100%;
     margin-left: 3px;
-    background-color: violet;
+    background-color: #242424;
+    color: rgb(205, 205, 205);
+    font-size: 13px;
+    line-height: 0.5;
+    margin-left: 8px;
 }
 .playerController-playbar-data-musicData-artist{
     width: 100%;
     height: 50%;
-    background-color: wheat;
+    background-color: #242424;
 }
 .playerController-playbar-data-musicData-music{
     width: 100%;
     height: 50%;
-    background-color: rgb(186, 139, 53);
+    background-color: #242424;
 }
 .fa-solid.fa-volume-off{
-    font-size: 20px;
+    font-size: 15px;
     width: 10%;
     text-align: center;
-    line-height: 2;
-    background-color: yellow;
+    line-height: 0.9;
+    margin-right: 5px;
+    background-color: #242424;
+    color: rgb(205, 205, 205);
 }
 </style>

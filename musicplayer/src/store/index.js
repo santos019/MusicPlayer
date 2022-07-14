@@ -4,13 +4,18 @@ import musicData from '@/assets/musicData.json'
 import { SET_CURRNETMUSIC,
     SET_CURRENTMUSIC_INIT,
     SET_CURRNETMUSIC_OBJECT,
-    REMOVE_INDEX } from './mutation-type'
+    REMOVE_INDEX,
+    SET_MAP_OBJECT,
+    REMOVE_INDEX_RANDOMLIST } from './mutation-type'
 import { findNextMucic, findBeforeMusic } from '../lib/index'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
         baseList: musicData,
+        footprintList: {
+        },
+        randomList: [],
         allPlayList: [],
         currentMusic: {}
     },
@@ -20,6 +25,9 @@ export default new Vuex.Store({
         },
         currentMusic (state) {
             return state.currentMusic
+        },
+        randomList (state) {
+            return state.randomList
         }
     },
     mutations: {
@@ -50,31 +58,67 @@ export default new Vuex.Store({
             localStorage.setItem('currentMusic', JSON.stringify(state.currentMusic))
         },
         [REMOVE_INDEX]: (state, removeIds) => {
-            console.log(removeIds)
+            // console.log(removeIds)
             let removeIndex = 0
             for (let id of removeIds) {
-                console.log('in')
+                // console.log('in', id)
                 removeIndex = state.baseList.findIndex(el => String(el.id) === String(id))
                 state.baseList.splice(removeIndex, 1)
+                console.log(state.randomList.delete(Number(id)))
             } // 반영하려면 나중에 localStorage에 저장하기
+        },
+        [SET_MAP_OBJECT]: (state, data) => {
+            state.randomList = data
+        },
+        [REMOVE_INDEX_RANDOMLIST]: (state, value) => {
+            state.randomList.delete(value)
         }
     },
     actions: {
-        FETCH_NEXTMUSIC ({ commit }) {
-            console.log('ddd')
-            const findResult = findNextMucic(this.state.baseList, this.state.currentMusic)
-            const data = { musicData: this.state.baseList[findResult] === undefined ? -1 : this.state.baseList[findResult],
+        FETCH_NEXTMUSIC ({ commit, state }) {
+            // console.log('ddd')
+            const findResult = findNextMucic(state.baseList, state.currentMusic)
+            const data = { musicData: state.baseList[findResult] === undefined ? -1 : state.baseList[findResult],
                 musicIndex: findResult
             }
-            console.log('data', data)
+            // console.log('data', data)
             commit(SET_CURRNETMUSIC_OBJECT, data)
         },
-        FETCH_BEFOREMUSIC ({ commit }) {
-            const findResult = findBeforeMusic(this.state.baseList, this.state.currentMusic)
+        FETCH_BEFOREMUSIC ({ commit, state }) {
+            const findResult = findBeforeMusic(state.baseList, state.currentMusic)
             const data = {
-                musicData: this.state.baseList[findResult],
+                musicData: state.baseList[findResult],
                 musicIndex: findResult
             }
+            commit(SET_CURRNETMUSIC_OBJECT, data)
+        },
+        FETCH_RANDOMMUSIC_LIST ({ commit, state }) {
+            const arr = []
+            const arrObj = new Map()
+            for (let num = 0; num < state.baseList.length; num++) {
+                arr[num] = state.baseList[num].id
+            }
+            arr.sort(() => Math.random() - 0.5)
+            for (let num = 0; num < state.baseList.length; num++) {
+                arrObj.set(arr[num], true)
+            }
+            // arrObj.set(28, 'test')
+            // const iterator = arrObj.keys()
+            // console.log(iterator.next().value)
+            // console.log(iterator.next().value)
+            commit(SET_MAP_OBJECT, arrObj)
+        },
+        FETCH_RANDOMMUSIC ({ commit, state }) {
+            const iterator = state.randomList.keys()
+            const value = iterator.next().value
+            console.log('value', value)
+            const findResult = state.baseList.findIndex(el => el.id === value)
+            console.log('findResult', findResult)
+            const data = { musicData: state.baseList[findResult],
+                musicIndex: state.baseList[findResult].index
+            }
+            commit(REMOVE_INDEX_RANDOMLIST, value)
+            // console.log('data', data)
             commit(SET_CURRNETMUSIC_OBJECT, data)
         }
     }

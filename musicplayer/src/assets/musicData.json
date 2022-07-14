@@ -5,7 +5,8 @@
         "artist": "WSG워너비 조별경연 (대청봉)",
         "album": "WSG워너비 조별경연",
         "thumbnail": "./assets/img/thumb/10954279_20220527162320_500.jpeg",
-        "id": 0
+        "id": 0,
+        "index": 0
     },
     {
         "title": "행복한 나를",
@@ -13,7 +14,8 @@
         "artist": "WSG워너비 조별경연 (신성봉)",
         "album": "WSG워너비 조별경연",
         "thumbnail": "./assets/img/thumb/10954279_20220527162320_500.jpeg",
-        "id": 1
+        "id": 1,
+        "index": 1
     },
     {
         "title": "사랑의 인사",
@@ -21,7 +23,8 @@
         "artist": "WSG워너비 조별경연 (비로봉)",
         "album": "WSG워너비 조별경연",
         "thumbnail": "./assets/img/thumb/10954279_20220527162320_500.jpeg",
-        "id": 2
+        "id": 2,
+        "index": 2
     },
     {
         "title": "Break Away",
@@ -29,7 +32,8 @@
         "artist": "WSG워너비 조별경연 (할미봉)",
         "album": "WSG워너비 조별경연",
         "thumbnail": "./assets/img/thumb/10954279_20220527162320_500.jpeg",
-        "id": 3
+        "id": 3,
+        "index": 3
     },
     {
         "title": "어마어마해",
@@ -37,7 +41,8 @@
         "artist": "모모랜드 (MOMOLAND)",
         "album": "어마어마해",
         "thumbnail": "./assets/img/thumb/10058095_500.jpeg",
-        "id": 4
+        "id": 4,
+        "index": 4
     },
     {
         "title": "상상더하기",
@@ -45,7 +50,8 @@
         "artist": "라붐 (LABOUM)",
         "album": "Fresh Adventure",
         "thumbnail": "./assets/img/thumb/2677681_500.jpeg",
-        "id": 5
+        "id": 5,
+        "index": 5
     },
     {
         "title": "라일락",
@@ -53,7 +59,8 @@
         "artist": "아이유",
         "album": "IU 5th Album 'LILAC'",
         "thumbnail": "./assets/img/thumb/10554246_20210325161233_500.jpeg",
-        "id": 6
+        "id": 6,
+        "index": 6
     },
     {
         "title": "Flu",
@@ -61,7 +68,8 @@
         "artist": "아이유",
         "album": "IU 5th Album 'LILAC'",
         "thumbnail": "./assets/img/thumb/10554246_20210325161233_500.jpeg",
-        "id": 7
+        "id": 7,
+        "index": 7
     },
     {
         "title": "Coin",
@@ -69,7 +77,8 @@
         "artist": "아이유",
         "album": "IU 5th Album 'LILAC'",
         "thumbnail": "./assets/img/thumb/10554246_20210325161233_500.jpeg",
-        "id": 8
+        "id": 8,
+        "index": 8
     },
     {
         "title": "봄 안녕 봄",
@@ -77,7 +86,8 @@
         "artist": "아이유",
         "album": "IU 5th Album 'LILAC'",
         "thumbnail": "./assets/img/thumb/10554246_20210325161233_500.jpeg",
-        "id": 9
+        "id": 9,
+        "index": 9
     },
     {
         "title": "Celebrity",
@@ -85,7 +95,8 @@
         "artist": "아이유",
         "album": "IU 5th Album 'LILAC'",
         "thumbnail": "./assets/img/thumb/10554246_20210325161233_500.jpeg",
-        "id": 10
+        "id": 10,
+        "index": 10
     },
     {
         "title": "돌림노래 (Feat. DEAN)",
@@ -93,7 +104,8 @@
         "artist": "아이유",
         "album": "IU 5th Album 'LILAC'",
         "thumbnail": "./assets/img/thumb/10554246_20210325161233_500.jpeg",
-        "id": 11
+        "id": 11,
+        "index": 11
     },
     {
         "title": "빈 컵 (Empty Cup)",
@@ -101,7 +113,8 @@
         "artist": "아이유",
         "album": "IU 5th Album 'LILAC'",
         "thumbnail": "./assets/img/thumb/10554246_20210325161233_500.jpeg",
-        "id": 12
+        "id": 12,
+        "index": 12
     },
     {
         "title": "어푸 (Ah puh)",
@@ -109,7 +122,8 @@
         "artist": "아이유",
         "album": "IU 5th Album 'LILAC'",
         "thumbnail": "./assets/img/thumb/10554246_20210325161233_500.jpeg",
-        "id": 13
+        "id": 13,
+        "index": 13
     },
     {
         "title": "에필로그",
@@ -117,7 +131,8 @@
         "artist": "아이유",
         "album": "IU 5th Album 'LILAC'",
         "thumbnail": "./assets/img/thumb/10554246_20210325161233_500.jpeg",
-        "id": 14
+        "id": 14,
+        "index": 14
     },
     {
         "title": "드라마",
@@ -125,7 +140,8 @@
         "artist": "아이유",
         "album": "조각집",
         "thumbnail": "./assets/img/thumb/10827816_20211229143632_500.jpeg",
-        "id": 15
+        "id": 15,
+        "index": 15
     },
     {
         "title": "정거장",
@@ -133,7 +149,8 @@
         "artist": "아이유",
         "album": "조각집",
         "thumbnail": "./assets/img/thumb/10827816_20211229143632_500.jpeg",
-        "id": 16
+        "id": 16,
+        "index": 16
     },
     {
         "title": "겨울잠",
@@ -141,7 +158,8 @@
         "artist": "아이유",
         "album": "조각집",
         "thumbnail": "./assets/img/thumb/10827816_20211229143632_500.jpeg",
-        "id": 17
+        "id": 17,
+        "index": 17
     },
     {
         "title": "너",
@@ -149,7 +167,8 @@
         "artist": "아이유",
         "album": "조각집",
         "thumbnail": "./assets/img/thumb/10827816_20211229143632_500.jpeg",
-        "id": 18
+        "id": 18,
+        "index": 18
     },
     {
         "title": "러브레터",
@@ -157,7 +176,8 @@
         "artist": "아이유",
         "album": "조각집",
         "thumbnail": "./assets/img/thumb/10827816_20211229143632_500.jpeg",
-        "id": 19
+        "id": 19,
+        "index": 19
     },
     {
         "title": "unlucky",
@@ -165,7 +185,8 @@
         "artist": "아이유",
         "album": "Love poem",
         "thumbnail": "./assets/img/thumb/10346650_500.jpeg",
-        "id": 20
+        "id": 20,
+        "index": 20
     },
     {
         "title": "그 사람",
@@ -173,7 +194,8 @@
         "artist": "아이유",
         "album": "Love poem",
         "thumbnail": "./assets/img/thumb/10346650_500.jpeg",
-        "id": 21
+        "id": 21,
+        "index": 21
     },
     {
         "title": "Blueming",
@@ -181,7 +203,8 @@
         "artist": "아이유",
         "album": "Love poem",
         "thumbnail": "./assets/img/thumb/10346650_500.jpeg",
-        "id": 22
+        "id": 22,
+        "index": 22
     },
     {
         "title": "시간의 바깥",
@@ -189,7 +212,8 @@
         "artist": "아이유",
         "album": "Love poem",
         "thumbnail": "./assets/img/thumb/10346650_500.jpeg",
-        "id": 23
+        "id": 23,
+        "index": 23
     },
     {
         "title": "자장가",
@@ -197,7 +221,8 @@
         "artist": "아이유",
         "album": "Love poem",
         "thumbnail": "./assets/img/thumb/10346650_500.jpeg",
-        "id": 24
+        "id": 24,
+        "index": 24
     },
     {
         "title": "Love poem",
@@ -205,7 +230,8 @@
         "artist": "아이유",
         "album": "Love poem",
         "thumbnail": "./assets/img/thumb/10346650_500.jpeg",
-        "id": 25
+        "id": 25,
+        "index": 25
     },
     {
         "title": "삐삐",
@@ -213,7 +239,8 @@
         "artist": "아이유",
         "album": "삐삐",
         "thumbnail": "./assets/img/thumb/10210535_500.jpeg",
-        "id": 26
+        "id": 26,
+        "index": 26
     },
     {
         "title": "밤편지",
@@ -221,7 +248,8 @@
         "artist": "아이유",
         "album": "밤편지",
         "thumbnail": "./assets/img/thumb/10047890_500.jpeg",
-        "id": 27
+        "id": 27,
+        "index": 27
     },
     {
         "title": "내 손을 잡아",
@@ -229,6 +257,7 @@
         "artist": "아이유",
         "album": "최고의 사랑 OST Part.4",
         "thumbnail": "./assets/img/thumb/optimize.jpeg",
-        "id": 28
+        "id": 28,
+        "index": 28
     }
 ]
