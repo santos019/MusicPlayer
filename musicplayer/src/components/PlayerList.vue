@@ -29,7 +29,7 @@
             <li v-for="(data, index) in baseList" :key="index" class="playerList-list-mylist-list-lists" :style="data.id === currentMusic.musicData.id ? currnetPlayingMusic : ''">
               <transition name="fadeList">
                 <div v-if="currentListOffset" class="playerList-list-mylist-list-checkbox-container" >
-                    <input v-model="playListCheckValue" :value="index" :ref="`playerListCheckboxRef${index}`" type="checkbox" class="playerList-list-mylist-check" id="player-checkbox"/>
+                    <input v-model="checked[index]" :ref="`playerListCheckboxRef${index}`" type="checkbox" class="playerList-list-mylist-check" id="player-checkbox"/>
                     <label class="playerList-list-mylist-label" :ref="`playerListCheckboxLabelRef${index}`" @click="testref(index)" for="player-checkbox"></label>
                 </div>
               </transition>
@@ -97,13 +97,13 @@ export default {
                 }
             },
             currnetPlayingMusic: {
-                opcity: 0.5,
                 backgroundColor: '#3a3a3a'
-            }
+            },
+            checked: {}
         }
     },
     methods: {
-        ...mapMutations(['SET_CURRENTMUSIC', 'REMOVE_INDEX']),
+        ...mapMutations(['SET_CURRENTMUSIC', 'REMOVE_INDEX', 'SET_CHECKLIST_ADD']),
         listClick (data) {
             this.SET_CURRENTMUSIC(data)
             bus.$emit('moveMusic')

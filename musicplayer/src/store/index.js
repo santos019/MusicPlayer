@@ -30,6 +30,9 @@ export default new Vuex.Store({
         },
         randomList (state) {
             return state.randomList
+        },
+        checkList (state) {
+            return state.checkList
         }
     },
     mutations: {
@@ -48,7 +51,7 @@ export default new Vuex.Store({
             }
         },
         [SET_CHECKLIST_ADD]: (state, data) => {
-            state.checkList.set()
+            state.checkList.set(data, true)
         },
         [SET_CURRNETMUSIC]: (state, music) => {
             const data = {
