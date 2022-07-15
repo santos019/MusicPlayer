@@ -160,6 +160,10 @@ export default {
                         this.FETCH_RANDOMMUSIC_LIST()
                         this.playMusicEnvt()
                         console.log('3')
+                    } else if (this.rotateBtn === 'second' && this.shuffleBtn === false && this.randomList.size !== 0) {
+                        this.FETCH_RANDOMMUSIC()
+                        this.playMusicEnvt()
+                        console.log('3-1')
                     } else if (this.rotateBtn === 'third') {
                         this.currentMusicTime = 0
                         this.playMusicEnvt()

@@ -12,7 +12,7 @@
       <div class="playerList-list-sidememu-order">
         리스트순
       </div>
-      <div class="playerList-list-sidemenu-makePlayList">
+      <div class="playerList-list-sidemenu-makePlayList" :style="menuOffset === true ?currentListOffset === true ? {color: 'rgb(240, 74, 74)'} : '' : playListOffset === true ? {color: 'rgb(240, 74, 74)'} : ''" @click="() => { menuOffset === true ? currentListOffset = !currentListOffset : playListOffset = !playListOffset}">
         <i class="fa-solid fa-plus"></i>
       </div>
       <div class="playerList-list-sidemenu-search" @click="()=> {searchOffset = !searchOffset}">
@@ -26,7 +26,13 @@
       <div class="playerList-list-mylist-list-container">
         <transition name="fade">
           <div v-if=menuOffset class="playerList-list-mylist-list-nowPlayList">
-            <li v-for="(data, index) in baseList" :key="index" class="playerList-list-mylist-list-lists">
+            <li v-for="(data, index) in baseList" :key="index" class="playerList-list-mylist-list-lists" :style="data.id === currentMusic.musicData.id ? currnetPlayingMusic : ''">
+              <transition name="fadeList">
+                <div v-if="currentListOffset" class="playerList-list-mylist-list-checkbox-container" >
+                    <input v-model="playListCheckValue" :value="index" :ref="`playerListCheckboxRef${index}`" type="checkbox" class="playerList-list-mylist-check" id="player-checkbox"/>
+                    <label class="playerList-list-mylist-label" :ref="`playerListCheckboxLabelRef${index}`" @click="testref(index)" for="player-checkbox"></label>
+                </div>
+              </transition>
               <img :src="(data.thumbnail)" class="playerList-list-mylist-list-lists-img"  @click="listClick(data)"/>
               <div class="playList-list-mylist-list-datas"  @click="listClick(data)">
                 <div class="playList-list-mylist-list-list-title">
@@ -47,10 +53,14 @@
             플레이리스트
           </div>
         </transition>
+        {{testvalue}}
       </div>
-      <div class="playerList-list-mylist-modal-container">
-        모달
+      <transition name="fadeModal">
+      <div class="playerList-list-mylist-modal-container" v-if="menuOffset===true ? currentListOffset : playListOffset">
+        <i class="fa-solid fa-plus"></i>
+        <i class="fa-solid fa-trash-can"></i>
       </div>
+      </transition>
     </div>
   </div>
 </template>
@@ -61,7 +71,7 @@ import bus from '../util/bus.js'
 
 export default {
     computed: {
-        ...mapGetters(['baseList'])
+        ...mapGetters(['baseList', 'currentMusic'])
     },
     created () {
         this.testDatas = this.baseList
@@ -70,7 +80,12 @@ export default {
         return {
             menuOffset: true,
             searchOffset: false,
+            currentListOffset: false,
+            playListOffset: false,
+            addListOffset: false,
             testDatas: null,
+            testvalue: null,
+            playListCheckValue: false,
             menuOffsetStyle: {
                 true: {
                     backgroundColor: '#111111',
@@ -80,6 +95,10 @@ export default {
                     backgroundColor: '#242424',
                     color: 'rgb(192, 191, 189)'
                 }
+            },
+            currnetPlayingMusic: {
+                opcity: 0.5,
+                backgroundColor: '#3a3a3a'
             }
         }
     },
@@ -90,9 +109,15 @@ export default {
             bus.$emit('moveMusic')
         },
         makeArr (data) {
-            console.log('ddd')
             const arr = [`${data}`]
             this.REMOVE_INDEX(arr)
+        },
+        testref (index) {
+            console.log('index', index)
+            console.log(this.$refs[`playerListCheckboxRef${index}`][0])
+            // this.$refs[`playerListCheckboxRef${index}`][0].value = true
+            // this.$refs[`playerListCheckboxRef${index}`][0].classList.add('clickLabel')
+            this.$refs[`playerListCheckboxLabelRef${index}`][0].classList.toggle('clickLabel')
         }
     }
 }
@@ -103,12 +128,10 @@ export default {
 .playerList-container{
   width: 100%;
   height: 200px;
-  background-color: rgb(44, 42, 165);
 }
 .playerList-list-menu-container{
   width: 100%;
   height: 35px;
-  background-color: cadetblue;
   display: flex;
 }
 .playerList-list-sidmenu-container{
@@ -119,22 +142,31 @@ export default {
 .playerList-list-mylist-container{
   width: 100%;
   height: 300px;
-  background-color: darkgreen;
 }
 .playerList-list-mylist-list-container{
   width: 100%;
-  height: 200px;
-  background-color: chartreuse;
+  /* height: 200px; */
 }
 .playerList-list-mylist-modal-container{
   width: 100%;
-  height: 100px;
-  background-color: rgb(167, 167, 167);
+  height: 60px;
+  border-radius: 13px;
+  background-color: #242424;
+  font-size: 25px;
+  color: rgb(167, 167, 167);
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+.playerList-list-mylist-modal-container>i {
+    cursor: pointer;
+}
+.playerList-list-mylist-modal-container>i:hover{
+    color: rgb(240, 74, 74);
 }
 .playerList-list-menu-base{
   width: 50%;
   height: 100%;
-  background-color: aqua;
   font-size: 13px;
   text-align: center;
   line-height: 2.5;
@@ -143,20 +175,33 @@ export default {
 .playerList-list-menu-playlist{
   width: 50%;
   height: 100%;
-  background-color: rgb(41, 157, 81);
   font-size: 13px;
   text-align: center;
   line-height: 2.5;
   cursor: pointer;
 
 }
-.fade-enter-active  {
+.fade-enter-active {
   transition: opacity .5s;
 }
 .fade-leave-active {
   display: none;
 }
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+.fadeModal-enter-active, .fadeList-enter-active {
+    transition: all .3s ease;
+}
+.fadeModal-leave-active, .fadeList-leave-active {
+    transition: all .5s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+.fadeModal-leave-to,  .fadeModal-enter {
+    transform: translateY(10px);
+    opacity: 0;
+}
+.fadeList-enter, .fadeList-leave-to {
+    transform: translateX(-10px);
+    opacity: 0;
+}
+.fade-enter, .fade-leave-to/* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
 }
 .playerList-list-mylist-list-playList{
@@ -164,7 +209,7 @@ export default {
 }
 .playerList-list-mylist-list-nowPlayList{
   background-color: #111111;
-  height: 200px;
+  height: 250px;
   overflow-y: auto;
 }
 .playerList-list-mylist-list-lists{
@@ -183,18 +228,18 @@ export default {
 }
 .playList-list-mylist-list-list-artist{
   display: block;
-  background-color: #111111;
+  /* background-color: #111111; */
   font-size: 12px;
 }
 .playList-list-mylist-list-list-title{
-  background-color: #111111;
+  /* background-color: #111111; */
   display: block;
   font-size: 14px;
   margin-top: 5px;
 }
 .playList-list-mylist-list-datas{
   width: 305px;
-  background-color: #111111;
+  /* background-color: #111111; */
   margin-left: 10px;
   color: rgb(167, 167, 167);
 
@@ -234,5 +279,44 @@ export default {
   line-height: 3;
   margin-right: 10px;
   color: rgb(201, 195, 195);
+}
+input[type="checkbox"]{
+    display: none;
+}
+input[type="checkbox"] + label{
+    display: inline-block;
+    width: 13px;
+    height: 13px;
+    margin: auto;
+    margin-right: 10px;
+    margin-left: 10px;
+    border: 1px solid rgb(201, 195, 195);
+    border-radius: 15px 10px 10px 10px;
+    position: relative;
+    cursor: pointer;
+    margin-top: 16px;
+}
+.clickLabel {
+    /* content: '✔';
+    font-size: 50px;
+    color: rgb(240, 74, 74); */
+    width: 13px;
+    height: 13px;
+    position: absolute;
+    /* top: -5px; */
+    background: rgb(240, 74, 74);
+}
+/* input[id="player-checkbox"]:checked + label::after{
+     content: '✔';
+    font-size: 15px;
+    color: rgb(240, 74, 74);
+    width: 13px;
+    height: 13px;
+    position: absolute;
+    top: -5px;
+} */
+
+.playerList-list-mylist-list-checkbox-container{
+    /* background-color: aliceblue; */
 }
 </style>

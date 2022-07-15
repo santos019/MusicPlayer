@@ -51,4 +51,7 @@ export default {
     height: 320px;
     background-color: #242424;
 }
+.player-list-container{
+    height: 370px;
+}
 </style>

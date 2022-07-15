@@ -6,7 +6,8 @@ import { SET_CURRNETMUSIC,
     SET_CURRNETMUSIC_OBJECT,
     REMOVE_INDEX,
     SET_MAP_OBJECT,
-    REMOVE_INDEX_RANDOMLIST } from './mutation-type'
+    REMOVE_INDEX_RANDOMLIST,
+    SET_CHECKLIST_ADD } from './mutation-type'
 import { findNextMucic, findBeforeMusic } from '../lib/index'
 Vue.use(Vuex)
 
@@ -17,7 +18,8 @@ export default new Vuex.Store({
         },
         randomList: [],
         allPlayList: [],
-        currentMusic: {}
+        currentMusic: {},
+        checkList: {}
     },
     getters: {
         baseList (state) {
@@ -45,6 +47,9 @@ export default new Vuex.Store({
                 state.currentMusic = null
             }
         },
+        [SET_CHECKLIST_ADD]: (state, data) => {
+            state.checkList.set()
+        },
         [SET_CURRNETMUSIC]: (state, music) => {
             const data = {
                 musicData: music,
@@ -63,12 +68,13 @@ export default new Vuex.Store({
                 removeIndex = state.baseList.findIndex(el => String(el.id) === String(id))
                 state.baseList.splice(removeIndex, 1)
                 state.randomList.delete(Number(id))
-            } // 반영하려면 나중에 localStorage에 저장하기
+            }
             for (const value in state.baseList) {
                 state.baseList[value].index = Number(value)
+                if (state.baseList[value].id === state.currentMusic.musicData.id) {
+                    state.currentMusic.musicIndex = Number(value)
+                }
             }
-            const newCurrentIndex = state.baseList.findIndex(el => el.id === state.currentMusic.musicData.id)
-            state.currentMusic.musicIndex = newCurrentIndex
         },
         [SET_MAP_OBJECT]: (state, data) => {
             state.randomList = data
