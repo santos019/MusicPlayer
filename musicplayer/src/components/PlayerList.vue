@@ -12,6 +12,14 @@
       <div class="playerList-list-sidememu-order">
         리스트순
       </div>
+      <transition name="fadeList">
+      <div v-if="menuOffset" class="playserList-list-allCheck-Option" @click="allCheckBtn">
+        {{allCheckOffset}}전체선택
+      </div>
+      <div v-else class="playserList-list-allCheck-Option" @click="allCheckBtn">
+        {{allCheckOffset}}전체선택2
+      </div>
+      </transition>
       <div class="playerList-list-sidemenu-makePlayList" :style="menuOffset === true ?currentListOffset === true ? {color: 'rgb(240, 74, 74)'} : '' : playListOffset === true ? {color: 'rgb(240, 74, 74)'} : ''" @click="() => { menuOffset === true ? currentListOffset = !currentListOffset : playListOffset = !playListOffset}">
         <i class="fa-solid fa-plus"></i>
       </div>
@@ -28,9 +36,9 @@
           <div v-if=menuOffset class="playerList-list-mylist-list-nowPlayList">
             <li v-for="(data, index) in baseList" :key="index" class="playerList-list-mylist-list-lists" :style="data.id === currentMusic.musicData.id ? currnetPlayingMusic : ''">
               <transition name="fadeList">
-                <div v-if="currentListOffset" class="playerList-list-mylist-list-checkbox-container" >
-                    <input v-model="checked[index]" :ref="`playerListCheckboxRef${index}`" type="checkbox" class="playerList-list-mylist-check" id="player-checkbox"/>
-                    <label class="playerList-list-mylist-label" :ref="`playerListCheckboxLabelRef${index}`" @click="testref(index)" for="player-checkbox"></label>
+                <div v-if="currentListOffset" class="playerList-list-mylist-list-checkbox-container"  @click.self="checkEvnt(data)" >
+                    <input v-model="checked[index]" type="checkbox"  class="playerList-list-mylist-check" id="player-checkbox"/>
+                    <label class="playerList-list-mylist-label" :class="{clickLabel: checkList.has(data.id)}" for="player-checkbox" @click.self="checkEvnt(data)">✔</label>
                 </div>
               </transition>
               <img :src="(data.thumbnail)" class="playerList-list-mylist-list-lists-img"  @click="listClick(data)"/>
@@ -49,19 +57,33 @@
           </div>
         </transition>
         <transition name="fade">
-          <div v-if=!menuOffset class="playerList-list-mylist-list-playList">
-            플레이리스트
+          <div v-if=!menuOffset class="playerList-list-mylist-list-nowPlayList">
           </div>
         </transition>
         {{testvalue}}
       </div>
       <transition name="fadeModal">
-      <div class="playerList-list-mylist-modal-container" v-if="menuOffset===true ? currentListOffset : playListOffset">
-        <i class="fa-solid fa-plus"></i>
-        <i class="fa-solid fa-trash-can"></i>
+      <div class="playerList-list-mylist-modal-container" v-if="menuOffset ? currentListOffset : playListOffset">
+        <transition name=fadeList>
+        <div class="playerList-list-mylist-modal-base">
+          <i class="fa-solid fa-plus" @click="()=> {makePlaylistOffset = !makePlaylistOffset}"></i>
+          <i class="fa-solid fa-trash-can" @click="() => REMOVE_INDEX(checkList)"></i>
+        </div>
+        </transition>
       </div>
       </transition>
     </div>
+    <transition name=fadeList>
+        <div v-if="makePlaylistOffset" class="playerList-list-mylist-makePlaylist">
+          <div class="playerList-list-mylist-modal-makeNewList-back" @click="makePlaylistOffset = !makePlaylistOffset">돌아가기</div>
+          <div v-if="!makePlstlistTitleOffset" class="playerList-list-mylist-modal-makeNewList" @click="()=> {makePlstlistTitleOffset = !makePlstlistTitleOffset}"> + 새로운 리스트 생성</div>
+          <div v-if="makePlstlistTitleOffset" class="playerList-list-mylist-modal-makeNewList-title">
+            <input class="playerList-list-mylist-modal-makeNewList-title-input"/>
+            <div class="playerList-list-mylist-modal-makeNewList-title-add" @click="()=> {}">완료</div>
+            <div class="playerList-list-mylist-modal-makeNewList-title-close" @click="()=> {makePlstlistTitleOffset = !makePlstlistTitleOffset}">x</div>
+          </div>
+        </div>
+        </transition>
   </div>
 </template>
 
@@ -71,7 +93,12 @@ import bus from '../util/bus.js'
 
 export default {
     computed: {
-        ...mapGetters(['baseList', 'currentMusic'])
+        ...mapGetters(['baseList', 'currentMusic', 'checkList']),
+        checkRender: function () {
+            if (this.checkList.size === this.baseList.length) {
+                return 'x'
+            } else return 'o'
+        }
     },
     created () {
         this.testDatas = this.baseList
@@ -83,8 +110,11 @@ export default {
             currentListOffset: false,
             playListOffset: false,
             addListOffset: false,
+            makePlaylistOffset: false,
+            makePlstlistTitleOffset: false,
             testDatas: null,
             testvalue: null,
+            allCheckOffset: '☐',
             playListCheckValue: false,
             menuOffsetStyle: {
                 true: {
@@ -103,21 +133,41 @@ export default {
         }
     },
     methods: {
-        ...mapMutations(['SET_CURRENTMUSIC', 'REMOVE_INDEX', 'SET_CHECKLIST_ADD']),
+        ...mapMutations(['SET_CURRENTMUSIC', 'REMOVE_INDEX', 'SET_CHECKLIST_ADD', 'REMOVE_CHECKLIST_INDEX', 'SET_CHECKLIST_CLEAR']),
         listClick (data) {
             this.SET_CURRENTMUSIC(data)
             bus.$emit('moveMusic')
         },
         makeArr (data) {
-            const arr = [`${data}`]
-            this.REMOVE_INDEX(arr)
+            const obj = new Map()
+            obj.set(data, true)
+            // const arr = [`${data}`]
+            this.REMOVE_INDEX(obj)
         },
-        testref (index) {
-            console.log('index', index)
-            console.log(this.$refs[`playerListCheckboxRef${index}`][0])
-            // this.$refs[`playerListCheckboxRef${index}`][0].value = true
-            // this.$refs[`playerListCheckboxRef${index}`][0].classList.add('clickLabel')
-            this.$refs[`playerListCheckboxLabelRef${index}`][0].classList.toggle('clickLabel')
+        checkEvnt (data) {
+            console.log('ans', this.checkList.has(data.id))
+            if (this.checkList.has(data.id)) {
+                this.REMOVE_CHECKLIST_INDEX(data.id)
+            } else {
+                this.SET_CHECKLIST_ADD(data)
+            }
+            if (this.checkList.size === this.baseList.length) {
+                this.allCheckOffset = '☑'
+            } else {
+                this.allCheckOffset = '☐'
+            }
+        },
+        allCheckBtn () {
+            if (this.allCheckOffset === '☐') {
+                for (const value of this.baseList) {
+                    console.log(value)
+                    this.SET_CHECKLIST_ADD(value)
+                }
+                this.allCheckOffset = '☑'
+            } else {
+                this.SET_CHECKLIST_CLEAR()
+                this.allCheckOffset = '☐'
+            }
         }
     }
 }
@@ -147,7 +197,7 @@ export default {
   width: 100%;
   /* height: 200px; */
 }
-.playerList-list-mylist-modal-container{
+.playerList-list-mylist-modal-base{
   width: 100%;
   height: 60px;
   border-radius: 13px;
@@ -158,10 +208,21 @@ export default {
   align-items: center;
   justify-content: space-evenly;
 }
-.playerList-list-mylist-modal-container>i {
+.playerList-list-mylist-makePlaylist{
+  width: 400px;
+  height: 250px;
+  border-radius: 13px;
+  background-color: #242424;
+  font-size: 25px;
+  color: rgb(167, 167, 167);
+  top: 415px;
+  left: 410px;
+  position: absolute;
+}
+.playerList-list-mylist-modal-base>i {
     cursor: pointer;
 }
-.playerList-list-mylist-modal-container>i:hover{
+.playerList-list-mylist-modal-base>i:hover{
     color: rgb(240, 74, 74);
 }
 .playerList-list-menu-base{
@@ -244,9 +305,12 @@ export default {
   color: rgb(167, 167, 167);
 
 }
-.playerList-list-sidememu-order{
+.playerList-list-sidememu-order, .playserList-list-allCheck-Option{
   display: inline;
-  background-color: antiquewhite;
+  /* background-color: antiquewhite; */
+  color: rgb(167, 167, 167);
+  margin-left: 5px;
+  font-size: 13px;
 }
 .playerList-list-sidemenu-search{
   display: inline;
@@ -283,29 +347,32 @@ export default {
 input[type="checkbox"]{
     display: none;
 }
-input[type="checkbox"] + label{
-    display: inline-block;
-    width: 13px;
-    height: 13px;
-    margin: auto;
-    margin-right: 10px;
-    margin-left: 10px;
-    border: 1px solid rgb(201, 195, 195);
-    border-radius: 15px 10px 10px 10px;
-    position: relative;
+.playerList-list-mylist-label{
+    display: flex;
+    width: 25px;
+    height: 50px;
+    font-size: 0px;
+    /* font-weight: 100; */
+    margin-left: 7px;
+    /* color: rgb(27, 0, 163); */
+    line-height: 2;
     cursor: pointer;
-    margin-top: 16px;
 }
 .clickLabel {
-    /* content: '✔';
-    font-size: 50px;
-    color: rgb(240, 74, 74); */
-    width: 13px;
-    height: 13px;
-    position: absolute;
+  /* text-align: center; */
+    /* display: inline; */
+    font-size: 18px;
+    font-weight: 300;
+    color: rgb(240, 74, 74);
+    width: 25px;
+    height: 50px;
+    line-height: 2.5;
+    margin-left: 7px;
+    /* position: relative; */
     /* top: -5px; */
-    background: rgb(240, 74, 74);
+    /* background-color: rgb(240, 74, 74); */
 }
+
 /* input[id="player-checkbox"]:checked + label::after{
      content: '✔';
     font-size: 15px;
@@ -318,5 +385,10 @@ input[type="checkbox"] + label{
 
 .playerList-list-mylist-list-checkbox-container{
     /* background-color: aliceblue; */
+    /* border: 1px solid red; */
+}
+.playerList-list-mylist-label{
+  /* width: 25px; */
+  /* background-color: blue; */
 }
 </style>

@@ -7,7 +7,9 @@ import { SET_CURRNETMUSIC,
     REMOVE_INDEX,
     SET_MAP_OBJECT,
     REMOVE_INDEX_RANDOMLIST,
-    SET_CHECKLIST_ADD } from './mutation-type'
+    SET_CHECKLIST_ADD,
+    REMOVE_CHECKLIST_INDEX,
+    SET_CHECKLIST_CLEAR } from './mutation-type'
 import { findNextMucic, findBeforeMusic } from '../lib/index'
 Vue.use(Vuex)
 
@@ -17,9 +19,10 @@ export default new Vuex.Store({
         footprintList: {
         },
         randomList: [],
-        allPlayList: [],
+        allPlayListIdList: [],
+        allPlayList: new Map(),
         currentMusic: {},
-        checkList: {}
+        checkList: new Map()
     },
     getters: {
         baseList (state) {
@@ -51,7 +54,10 @@ export default new Vuex.Store({
             }
         },
         [SET_CHECKLIST_ADD]: (state, data) => {
-            state.checkList.set(data, true)
+            state.checkList.set(data.id, data)
+        },
+        [SET_CHECKLIST_CLEAR]: (state) => {
+            state.checkList.clear()
         },
         [SET_CURRNETMUSIC]: (state, music) => {
             const data = {
@@ -67,10 +73,12 @@ export default new Vuex.Store({
         },
         [REMOVE_INDEX]: (state, removeIds) => {
             let removeIndex = 0
-            for (let id of removeIds) {
+            for (let id of removeIds.keys()) {
+                console.log('id', id)
                 removeIndex = state.baseList.findIndex(el => String(el.id) === String(id))
                 state.baseList.splice(removeIndex, 1)
                 state.randomList.delete(Number(id))
+                state.checkList.delete(Number(id))
             }
             for (const value in state.baseList) {
                 state.baseList[value].index = Number(value)
@@ -78,6 +86,10 @@ export default new Vuex.Store({
                     state.currentMusic.musicIndex = Number(value)
                 }
             }
+            // removeIds.clear()
+        },
+        [REMOVE_CHECKLIST_INDEX]: (state, id) => {
+            state.checkList.delete(id)
         },
         [SET_MAP_OBJECT]: (state, data) => {
             state.randomList = data
