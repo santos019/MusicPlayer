@@ -36,9 +36,9 @@
           <div v-if=menuOffset class="playerList-list-mylist-list-nowPlayList">
             <li v-for="(data, index) in baseList" :key="index" class="playerList-list-mylist-list-lists" :style="data.id === currentMusic.musicData.id ? currnetPlayingMusic : ''">
               <transition name="fadeList">
-                <div v-if="currentListOffset" class="playerList-list-mylist-list-checkbox-container"  @click.self="checkEvnt(data)" >
+                <div v-if="currentListOffset" class="playerList-list-mylist-list-checkbox-container"  >
                     <input v-model="checked[index]" type="checkbox"  class="playerList-list-mylist-check" id="player-checkbox"/>
-                    <label class="playerList-list-mylist-label" :class="{clickLabel: checkList.has(data.id)}" for="player-checkbox" @click.self="checkEvnt(data)">✔</label>
+                    <label class="playerList-list-mylist-label" :class="{clickLabel: checkList.has(data.id) || renderOffset }" for="player-checkbox" @click.self="checkEvnt(data)">✔</label>
                 </div>
               </transition>
               <img :src="(data.thumbnail)" class="playerList-list-mylist-list-lists-img"  @click="listClick(data)"/>
@@ -58,9 +58,9 @@
         </transition>
         <transition name="fade">
           <div v-if=!menuOffset class="playerList-list-mylist-list-nowPlayList">
-            <li v-for="(data, index) in allPlayListIdList" :key="index" class="playerList-list-mylist-list-playlist">
+            <li v-for="(data, index) in allPlayList" :key="index" class="playerList-list-mylist-list-playlist">
               <div class="playerList-list-mylist-list-content">
-                {{data.title}}
+                {{data[1].title}}
               </div>
             </li>
           </div>
@@ -88,8 +88,8 @@
             <div class="playerList-list-mylist-modal-makeNewList-title-close" @click="()=> {makePlstlistTitleOffset = !makePlstlistTitleOffset}">x</div>
           </div>
           <div class="playerList-list-mylist-modal-makeNewList-lists">
-            <li v-for="(data, index) in allPlayListIdList" @click="() => {SET_PLAYLIST_ADD(index)}" :key="index" class="playerList-list-mylist-modal-makeNewList-lists-li">
-              {{data.title}}
+            <li v-for="(data, index) in allPlayList" @click="() => { if (checkList.size > 0) {SET_PLAYLIST_ADD(data[0]); renderOffset = renderOffset === null ? false : null}}" :key="index" class="playerList-list-mylist-modal-makeNewList-lists-li">
+              {{data[1].title}}
             </li>
           </div>
         </div>
@@ -103,12 +103,12 @@ import bus from '../util/bus.js'
 
 export default {
     computed: {
-        ...mapGetters(['baseList', 'currentMusic', 'checkList', 'allPlayListIdList', 'allPlayList']),
-        checkRender: function () {
-            if (this.checkList.size === this.baseList.length) {
-                return 'x'
-            } else return 'o'
-        }
+        ...mapGetters(['baseList', 'currentMusic', 'checkList', 'allPlayListIdList', 'allPlayList'])
+        // checkRender: function () {
+        //     if (this.checkList.size === this.baseList.length) {
+        //         return 'x'
+        //     } else return 'o'
+        // }
     },
     created () {
         this.testDatas = this.baseList
@@ -127,6 +127,7 @@ export default {
             allCheckOffset: '☐',
             playListCheckValue: false,
             newListTitle: '',
+            renderOffset: false,
             menuOffsetStyle: {
                 true: {
                     backgroundColor: '#111111',

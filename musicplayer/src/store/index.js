@@ -107,33 +107,34 @@ export default new Vuex.Store({
             state.randomList.delete(value)
         },
         [SET_PLAYLIST_NEWLIST]: (state, title) => {
-            const data = {
-                'id': state.allPlayListIdIndex,
-                'title': title,
-                'order': []
-            }
-            console.log(data)
-            state.allPlayListIdList.push(data)
-            state.allPlayList.set(state.allPlayListIdIndex++, null)
+            // const data = {
+            //     'id': state.allPlayListIdIndex,
+            //     'title': title,
+            //     'order': []
+            // }
+            // console.log(data)
+            // state.allPlayListIdList.push(data)
+            state.allPlayList.set(state.allPlayListIdIndex++, { title })
         },
-        [SET_PLAYLIST_ADD]: (state, index) => {
+        [SET_PLAYLIST_ADD]: (state, id) => {
             // state.checkList.set()
-            const data = {}
-            for (let[key, value] of state.allPlayList.entries()) {
-                console.log(key + ' : ' + value)
-                if (value !== null) {
-                    data[key] = value
+            const data = new Map()
+            if (state.allPlayList.get(id).data) {
+                for (let[key, value] of state.allPlayList.get(id).data.entries()) {
+                    console.log(key + ' : ' + value)
+                    data.set(key, value)
                 }
             }
             for (let[key, value] of state.checkList.entries()) {
                 console.log(key + ' : ' + value)
-                data[key] = value
+                data.set(key, value)
             }
             // mapObj.set('test', null)
             // console.log('check', mapObj)
             console.log('data', data)
-            state.allPlayList.set(index, data)
-            console.log('index', index)
+            state.allPlayList.get(id).data = data
+            state.checkList.clear()
+            // Vue.set(state.checkList, 0, null)
         }
     },
     actions: {
