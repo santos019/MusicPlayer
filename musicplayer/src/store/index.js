@@ -9,7 +9,9 @@ import { SET_CURRNETMUSIC,
     REMOVE_INDEX_RANDOMLIST,
     SET_CHECKLIST_ADD,
     REMOVE_CHECKLIST_INDEX,
-    SET_CHECKLIST_CLEAR } from './mutation-type'
+    SET_CHECKLIST_CLEAR,
+    SET_PLAYLIST_NEWLIST,
+    SET_PLAYLIST_ADD } from './mutation-type'
 import { findNextMucic, findBeforeMusic } from '../lib/index'
 Vue.use(Vuex)
 
@@ -21,6 +23,7 @@ export default new Vuex.Store({
         randomList: [],
         allPlayListIdList: [],
         allPlayList: new Map(),
+        allPlayListIdIndex: Number(JSON.parse(localStorage.getItem('allPlayListIdIndex'))) || 0,
         currentMusic: {},
         checkList: new Map()
     },
@@ -36,6 +39,12 @@ export default new Vuex.Store({
         },
         checkList (state) {
             return state.checkList
+        },
+        allPlayListIdList (state) {
+            return state.allPlayListIdList
+        },
+        allPlayList (state) {
+            return state.allPlayList
         }
     },
     mutations: {
@@ -96,6 +105,35 @@ export default new Vuex.Store({
         },
         [REMOVE_INDEX_RANDOMLIST]: (state, value) => {
             state.randomList.delete(value)
+        },
+        [SET_PLAYLIST_NEWLIST]: (state, title) => {
+            const data = {
+                'id': state.allPlayListIdIndex,
+                'title': title,
+                'order': []
+            }
+            console.log(data)
+            state.allPlayListIdList.push(data)
+            state.allPlayList.set(state.allPlayListIdIndex++, null)
+        },
+        [SET_PLAYLIST_ADD]: (state, index) => {
+            // state.checkList.set()
+            const data = {}
+            for (let[key, value] of state.allPlayList.entries()) {
+                console.log(key + ' : ' + value)
+                if (value !== null) {
+                    data[key] = value
+                }
+            }
+            for (let[key, value] of state.checkList.entries()) {
+                console.log(key + ' : ' + value)
+                data[key] = value
+            }
+            // mapObj.set('test', null)
+            // console.log('check', mapObj)
+            console.log('data', data)
+            state.allPlayList.set(index, data)
+            console.log('index', index)
         }
     },
     actions: {

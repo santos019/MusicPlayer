@@ -58,6 +58,11 @@
         </transition>
         <transition name="fade">
           <div v-if=!menuOffset class="playerList-list-mylist-list-nowPlayList">
+            <li v-for="(data, index) in allPlayListIdList" :key="index" class="playerList-list-mylist-list-playlist">
+              <div class="playerList-list-mylist-list-content">
+                {{data.title}}
+              </div>
+            </li>
           </div>
         </transition>
         {{testvalue}}
@@ -78,9 +83,14 @@
           <div class="playerList-list-mylist-modal-makeNewList-back" @click="makePlaylistOffset = !makePlaylistOffset">돌아가기</div>
           <div v-if="!makePlstlistTitleOffset" class="playerList-list-mylist-modal-makeNewList" @click="()=> {makePlstlistTitleOffset = !makePlstlistTitleOffset}"> + 새로운 리스트 생성</div>
           <div v-if="makePlstlistTitleOffset" class="playerList-list-mylist-modal-makeNewList-title">
-            <input class="playerList-list-mylist-modal-makeNewList-title-input"/>
-            <div class="playerList-list-mylist-modal-makeNewList-title-add" @click="()=> {}">완료</div>
+            <input v-model="newListTitle" class="playerList-list-mylist-modal-makeNewList-title-input"/>
+            <div class="playerList-list-mylist-modal-makeNewList-title-add" @click="()=> {SET_PLAYLIST_NEWLIST(newListTitle); newListTitle = ''}">완료</div>
             <div class="playerList-list-mylist-modal-makeNewList-title-close" @click="()=> {makePlstlistTitleOffset = !makePlstlistTitleOffset}">x</div>
+          </div>
+          <div class="playerList-list-mylist-modal-makeNewList-lists">
+            <li v-for="(data, index) in allPlayListIdList" @click="() => {SET_PLAYLIST_ADD(index)}" :key="index" class="playerList-list-mylist-modal-makeNewList-lists-li">
+              {{data.title}}
+            </li>
           </div>
         </div>
         </transition>
@@ -93,7 +103,7 @@ import bus from '../util/bus.js'
 
 export default {
     computed: {
-        ...mapGetters(['baseList', 'currentMusic', 'checkList']),
+        ...mapGetters(['baseList', 'currentMusic', 'checkList', 'allPlayListIdList', 'allPlayList']),
         checkRender: function () {
             if (this.checkList.size === this.baseList.length) {
                 return 'x'
@@ -116,6 +126,7 @@ export default {
             testvalue: null,
             allCheckOffset: '☐',
             playListCheckValue: false,
+            newListTitle: '',
             menuOffsetStyle: {
                 true: {
                     backgroundColor: '#111111',
@@ -133,7 +144,7 @@ export default {
         }
     },
     methods: {
-        ...mapMutations(['SET_CURRENTMUSIC', 'REMOVE_INDEX', 'SET_CHECKLIST_ADD', 'REMOVE_CHECKLIST_INDEX', 'SET_CHECKLIST_CLEAR']),
+        ...mapMutations(['SET_CURRENTMUSIC', 'REMOVE_INDEX', 'SET_CHECKLIST_ADD', 'REMOVE_CHECKLIST_INDEX', 'SET_CHECKLIST_CLEAR', 'SET_PLAYLIST_NEWLIST', 'SET_PLAYLIST_ADD']),
         listClick (data) {
             this.SET_CURRENTMUSIC(data)
             bus.$emit('moveMusic')
@@ -390,5 +401,17 @@ input[type="checkbox"]{
 .playerList-list-mylist-label{
   /* width: 25px; */
   /* background-color: blue; */
+}
+.playerList-list-mylist-list-playlist{
+  color: aliceblue;
+  list-style: none;
+  height: 50px;
+  border: 1px solid wheat;
+}
+.playerList-list-mylist-list-content{
+
+}
+.playerList-list-mylist-modal-makeNewList-lists-li{
+  list-style: none;
 }
 </style>
