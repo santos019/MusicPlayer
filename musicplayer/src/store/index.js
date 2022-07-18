@@ -11,7 +11,12 @@ import { SET_CURRNETMUSIC,
     REMOVE_CHECKLIST_INDEX,
     SET_CHECKLIST_CLEAR,
     SET_PLAYLIST_NEWLIST,
-    SET_PLAYLIST_ADD } from './mutation-type'
+    SET_PLAYLIST_ADD,
+    SET_CURRENTOPENID,
+    REMOVE_PLAYLIST_INDEX,
+    REMOVE_CHECKLIST_PLAYLIST_INDEX,
+    SET_CHECKLIST_PLAYLIST_ADD,
+    SET_CHECKLIST_PLAYLIST_CLEAR } from './mutation-type'
 import { findNextMucic, findBeforeMusic } from '../lib/index'
 Vue.use(Vuex)
 
@@ -25,7 +30,9 @@ export default new Vuex.Store({
         allPlayList: new Map(),
         allPlayListIdIndex: Number(JSON.parse(localStorage.getItem('allPlayListIdIndex'))) || 0,
         currentMusic: {},
-        checkList: new Map()
+        checkList: new Map(),
+        currentOpenId: 0,
+        checkListPlayList: new Map()
     },
     getters: {
         baseList (state) {
@@ -45,6 +52,12 @@ export default new Vuex.Store({
         },
         allPlayList (state) {
             return state.allPlayList
+        },
+        currentOpenId (state) {
+            return state.currentOpenId
+        },
+        checkListPlayList (state) {
+            return state.checkListPlayList
         }
     },
     mutations: {
@@ -65,8 +78,14 @@ export default new Vuex.Store({
         [SET_CHECKLIST_ADD]: (state, data) => {
             state.checkList.set(data.id, data)
         },
+        [SET_CHECKLIST_PLAYLIST_ADD]: (state, data) => {
+            state.checkListPlayList.set(data.id, data)
+        },
         [SET_CHECKLIST_CLEAR]: (state) => {
             state.checkList.clear()
+        },
+        [SET_CHECKLIST_PLAYLIST_CLEAR]: (state) => {
+            state.checkListPlayList.clear()
         },
         [SET_CURRNETMUSIC]: (state, music) => {
             const data = {
@@ -97,8 +116,17 @@ export default new Vuex.Store({
             }
             // removeIds.clear()
         },
+        [REMOVE_PLAYLIST_INDEX]: (state, removeIds) => {
+            for (let id of removeIds.keys()) {
+                console.log('id', id)
+                state.allPlayList.get(state.currentOpenId).data.delete(id)
+            }
+        },
         [REMOVE_CHECKLIST_INDEX]: (state, id) => {
             state.checkList.delete(id)
+        },
+        [REMOVE_CHECKLIST_PLAYLIST_INDEX]: (state, id) => {
+            state.checkListPlayList.delete(id)
         },
         [SET_MAP_OBJECT]: (state, data) => {
             state.randomList = data
@@ -135,6 +163,9 @@ export default new Vuex.Store({
             state.allPlayList.get(id).data = data
             state.checkList.clear()
             // Vue.set(state.checkList, 0, null)
+        },
+        [SET_CURRENTOPENID]: (state, id) => {
+            state.currentOpenId = id
         }
     },
     actions: {

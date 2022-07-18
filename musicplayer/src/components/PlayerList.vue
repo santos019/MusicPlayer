@@ -14,13 +14,13 @@
       </div>
       <transition name="fadeList">
       <div v-if="menuOffset" class="playserList-list-allCheck-Option" @click="allCheckBtn">
-        {{allCheckOffset}}전체선택
+        {{allCheckOffsetCurrent}}전체선택
       </div>
       <div v-else class="playserList-list-allCheck-Option" @click="allCheckBtn">
-        {{allCheckOffset}}전체선택2
+        {{allCheckOffsetPlaylist}}전체선택2
       </div>
       </transition>
-      <div class="playerList-list-sidemenu-makePlayList" :style="menuOffset === true ?currentListOffset === true ? {color: 'rgb(240, 74, 74)'} : '' : playListOffset === true ? {color: 'rgb(240, 74, 74)'} : ''" @click="() => { menuOffset === true ? currentListOffset = !currentListOffset : playListOffset = !playListOffset}">
+      <div class="playerList-list-sidemenu-makePlayList" :style="menuOffset === true ?currentListOffset === true ? {color: 'rgb(240, 74, 74)'} : '' : playListOffset === true ? {color: 'rgb(240, 74, 74)'} : ''" @click="clickPlus">
         <i class="fa-solid fa-plus"></i>
       </div>
       <div class="playerList-list-sidemenu-search" @click="()=> {searchOffset = !searchOffset}">
@@ -33,8 +33,9 @@
     <div class="playerList-list-mylist-container">
       <div class="playerList-list-mylist-list-container">
         <transition name="fade">
-          <div v-if=menuOffset class="playerList-list-mylist-list-nowPlayList">
-            <li v-for="(data, index) in baseList" :key="index" class="playerList-list-mylist-list-lists" :style="data.id === currentMusic.musicData.id ? currnetPlayingMusic : ''">
+          <div v-if="menuOffset" class="playerList-list-mylist-list-nowPlayList">
+            <PlayerListList listName="baselist" @fromChild="fromChild" :fromRenderOffset="renderOffset" :currentListOffset="currentListOffset" :currnetPlayingMusic="currnetPlayingMusic" ></PlayerListList>
+            <!-- <li v-for="(data, index) in baseList" :key="index" class="playerList-list-mylist-list-lists" :style="data.id === currentMusic.musicData.id ? currnetPlayingMusic : ''">
               <transition name="fadeList">
                 <div v-if="currentListOffset" class="playerList-list-mylist-list-checkbox-container"  >
                     <input v-model="checked[index]" type="checkbox"  class="playerList-list-mylist-check" id="player-checkbox"/>
@@ -53,16 +54,33 @@
               <div class="playList-list-mylist-list-remove-container" @click="makeArr(data.id)">
                 <i class="fa-solid fa-x"></i>
               </div>
+            </li> -->
+          </div>
+        </transition>
+        <transition name="fade">
+          <div v-if="!menuOffset && !playListDetail" class="playerList-list-mylist-list-nowPlayList">
+            <li v-for="(data, index) in allPlayList" :key="index" class="playerList-list-mylist-list-playlist" @click="() => {SET_CURRENTOPENID(data[0]); playListDetail = true}">
+              <div class="playerList-list-mylist-list-nowPlayList-img-container">
+                <img v-for="(img, index) in getImgs(data[1])" :key="index" :src="img" class="plyerList-list-mylist-list-nowPlayList-img-1">
+              </div>
+              <div class="playerList-list-mylist-list-content">
+                <div class="playerList-list-mylist-list-content-title">
+                  {{data[1].title}}
+                </div>
+                <div class="playerList-list-mylist-list-content-count">
+                  노래 {{data[1].data === undefined ? 0 : data[1].data.size}} 곡
+                </div>
+              </div>
+              <div class="playList-list-mylist-list-remove-container" @click="makeArr(data.id)">
+                <i class="fa-solid fa-x"></i>
+              </div>
             </li>
           </div>
         </transition>
         <transition name="fade">
-          <div v-if=!menuOffset class="playerList-list-mylist-list-nowPlayList">
-            <li v-for="(data, index) in allPlayList" :key="index" class="playerList-list-mylist-list-playlist">
-              <div class="playerList-list-mylist-list-content">
-                {{data[1].title}}
-              </div>
-            </li>
+          <div v-if="!menuOffset && playListDetail" class="playerList-list-mylist-list-nowPlayList">
+            <div class="playerList-list-mylist-list-nowPlayList-menu" @click="returnToPlaylist"> 돌아가기 </div>
+            <PlayerListList listName="playlist" @fromChild="fromChild" :fromRenderOffset="renderOffset" :currentListOffset="playListOffset" :currnetPlayingMusic="currnetPlayingMusic" ></PlayerListList>
           </div>
         </transition>
         {{testvalue}}
@@ -71,8 +89,8 @@
       <div class="playerList-list-mylist-modal-container" v-if="menuOffset ? currentListOffset : playListOffset">
         <transition name=fadeList>
         <div class="playerList-list-mylist-modal-base">
-          <i class="fa-solid fa-plus" @click="()=> {makePlaylistOffset = !makePlaylistOffset}"></i>
-          <i class="fa-solid fa-trash-can" @click="() => REMOVE_INDEX(checkList)"></i>
+          <i v-if="menuOffset" class="fa-solid fa-plus" @click="()=> {makePlaylistOffset = !makePlaylistOffset}"></i>
+          <i class="fa-solid fa-trash-can" @click="deleteEvnt"></i>
         </div>
         </transition>
       </div>
@@ -99,16 +117,29 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex'
-import bus from '../util/bus.js'
+import PlayerListList from './PlayerList-list.vue'
 
 export default {
     computed: {
-        ...mapGetters(['baseList', 'currentMusic', 'checkList', 'allPlayListIdList', 'allPlayList'])
+        ...mapGetters(['baseList', 'currentMusic', 'checkList', 'allPlayListIdList', 'allPlayList', 'currentOpenId', 'checkListPlayList'])
         // checkRender: function () {
         //     if (this.checkList.size === this.baseList.length) {
         //         return 'x'
         //     } else return 'o'
         // }
+        // playListCurrent () {
+        //     console.log(1)
+        //     const data = this.allPlayList.get(this.currentOpenId)
+        //     const arr = []
+        //     if (data.data === undefined) return
+        //     for (let [key, value] of data.data.entries()) {
+        //         arr.push(value)
+        //     }
+        //     return arr
+        // }
+    },
+    components: {
+        PlayerListList
     },
     created () {
         this.testDatas = this.baseList
@@ -124,10 +155,13 @@ export default {
             makePlstlistTitleOffset: false,
             testDatas: null,
             testvalue: null,
-            allCheckOffset: '☐',
+            allCheckOffsetCurrent: '☐',
+            allCheckOffsetPlaylist: '☐',
             playListCheckValue: false,
             newListTitle: '',
             renderOffset: false,
+            playListDetail: false,
+            playListCurrent: [],
             menuOffsetStyle: {
                 true: {
                     backgroundColor: '#111111',
@@ -145,16 +179,31 @@ export default {
         }
     },
     methods: {
-        ...mapMutations(['SET_CURRENTMUSIC', 'REMOVE_INDEX', 'SET_CHECKLIST_ADD', 'REMOVE_CHECKLIST_INDEX', 'SET_CHECKLIST_CLEAR', 'SET_PLAYLIST_NEWLIST', 'SET_PLAYLIST_ADD']),
-        listClick (data) {
-            this.SET_CURRENTMUSIC(data)
-            bus.$emit('moveMusic')
-        },
+        ...mapMutations(['SET_CURRENTMUSIC', 'REMOVE_INDEX', 'SET_CHECKLIST_ADD', 'REMOVE_CHECKLIST_INDEX', 'SET_CHECKLIST_CLEAR', 'SET_PLAYLIST_NEWLIST', 'SET_PLAYLIST_ADD', 'SET_CURRENTOPENID', 'SET_CHECKLIST_PLAYLIST_CLEAR', 'SET_CHECKLIST_PLAYLIST_ADD', 'REMOVE_PLAYLIST_INDEX']),
         makeArr (data) {
             const obj = new Map()
             obj.set(data, true)
             // const arr = [`${data}`]
             this.REMOVE_INDEX(obj)
+        },
+        deleteEvnt () {
+            if (this.menuOffset) {
+                this.REMOVE_INDEX(this.checkList)
+            } else {
+                this.REMOVE_PLAYLIST_INDEX(this.checkListPlayList)
+                if (this.renderOffset === undefined) {
+                    this.renderOffset = false
+                } else {
+                    this.renderOffset = undefined
+                }
+            }
+        },
+        clickPlus () {
+            if (this.menuOffset) {
+                this.currentListOffset = !this.currentListOffset
+            } else {
+                this.playListOffset = !this.playListOffset
+            }
         },
         checkEvnt (data) {
             console.log('ans', this.checkList.has(data.id))
@@ -164,22 +213,74 @@ export default {
                 this.SET_CHECKLIST_ADD(data)
             }
             if (this.checkList.size === this.baseList.length) {
-                this.allCheckOffset = '☑'
+                this.allCheckOffsetCurrent = '☑'
             } else {
-                this.allCheckOffset = '☐'
+                this.allCheckOffsetCurrent = '☐'
             }
         },
         allCheckBtn () {
-            if (this.allCheckOffset === '☐') {
-                for (const value of this.baseList) {
-                    console.log(value)
-                    this.SET_CHECKLIST_ADD(value)
+            if (this.menuOffset) {
+                if (this.allCheckOffsetCurrent === '☐') {
+                    for (const value of this.baseList) {
+                    // console.log(value)
+                        this.SET_CHECKLIST_ADD(value)
+                    }
+                    this.allCheckOffsetCurrent = '☑'
+                } else {
+                    this.SET_CHECKLIST_CLEAR()
+                    this.allCheckOffsetCurrent = '☐'
                 }
-                this.allCheckOffset = '☑'
             } else {
-                this.SET_CHECKLIST_CLEAR()
-                this.allCheckOffset = '☐'
+                if (this.allCheckOffsetPlaylist === '☐') {
+                    const data = this.allPlayList.get(this.currentOpenId)
+                    for (let [key, value] of data.data.entries()) {
+                    // console.log(value)
+                        this.SET_CHECKLIST_PLAYLIST_ADD(value)
+                    }
+                    this.allCheckOffsetPlaylist = '☑'
+                } else {
+                    this.SET_CHECKLIST_PLAYLIST_CLEAR()
+                    this.allCheckOffsetPlaylist = '☐'
+                }
             }
+            if (this.renderOffset === undefined) {
+                this.renderOffset = false
+            } else {
+                this.renderOffset = undefined
+            }
+        },
+        getImgs (data) {
+            const arr = []
+            console.log('data', data.data)
+            if (data.data === undefined) return
+            for (let [key, value] of data.data.entries()) {
+                arr.push(value.thumbnail)
+                // if (arr.length === 4) return arr
+            }
+            return arr
+        },
+        fromChild () {
+            if (this.renderOffset === undefined) {
+                this.renderOffset = false
+            } else {
+                this.renderOffset = undefined
+            }
+            if (this.checkList.size === this.baseList.length) {
+                this.allCheckOffsetCurrent = '☑'
+            } else {
+                this.allCheckOffsetCurrent = '☐'
+            }
+        },
+        intoPlayListDetail (data) {
+            const arr = []
+            if (data.data === undefined) return
+            for (let [key, value] of data.data.entries()) {
+                arr.push(value)
+            }
+            this.playListCurrent = arr
+        },
+        returnToPlaylist () {
+            this.playListDetail = false
         }
     }
 }
@@ -277,8 +378,15 @@ export default {
 .fade-enter, .fade-leave-to/* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
 }
-.playerList-list-mylist-list-playList{
+.playerList-list-mylist-list-playlist{
   background-color: rgb(167, 167, 167);
+  /* display: flex; */
+  height: 50px;
+  width: 398px;
+  color: aliceblue;
+  list-style: none;
+  border: 1px solid wheat;
+  display: flex;
 }
 .playerList-list-mylist-list-nowPlayList{
   background-color: #111111;
@@ -403,16 +511,35 @@ input[type="checkbox"]{
   /* width: 25px; */
   /* background-color: blue; */
 }
-.playerList-list-mylist-list-playlist{
-  color: aliceblue;
-  list-style: none;
-  height: 50px;
-  border: 1px solid wheat;
-}
-.playerList-list-mylist-list-content{
 
+.playerList-list-mylist-list-content{
+  color: aliceblue;
+  width: 305px;
+  margin-left: 10px;
+}
+.playerList-list-mylist-list-content-title{
+  font-size: 18px;
+}
+.playerList-list-mylist-list-content-count{
+  font-size: 14px;
 }
 .playerList-list-mylist-modal-makeNewList-lists-li{
   list-style: none;
+}
+.playerList-list-mylist-list-nowPlayList-img-container{
+  width: 50px;
+  height: 50px;
+  background-color: aqua;
+  color: antiquewhite;
+  display: flex;
+  flex-wrap: wrap;
+}
+.playerList-list-mylist-list-nowPlayList-img-container>img {
+  width: 25px;
+  margin: 0px;
+  padding: 0;
+}
+.playerList-list-mylist-list-nowPlayList-menu{
+    color: antiquewhite;
 }
 </style>
