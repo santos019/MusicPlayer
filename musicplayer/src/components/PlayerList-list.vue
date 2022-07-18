@@ -1,9 +1,9 @@
 <template>
     <div>
-        <li v-for="(data, index) in listData()" :key="index" class="playerList-list-mylist-list-lists" :style="data.id === currentMusic.musicData.id ? currnetPlayingMusic : ''">
+        <li v-for="(data, index) in listData()" :key="`${index}${propsChange}`" class="playerList-list-mylist-list-lists" :style="data.id === currentMusic.musicData.id ? currnetPlayingMusic : ''">
             <transition name="fadeList">
                 <div v-if="currentListOffset" class="playerList-list-mylist-list-checkbox-container"  >
-                    <input type="checkbox" :value="fromRenderOffset"  class="playerList-list-mylist-check" id="player-checkbox"/>
+                    <input type="checkbox" :value="propsChange"  class="playerList-list-mylist-check" id="player-checkbox"/>
                     <label class="playerList-list-mylist-label" :class="{clickLabel: listName === 'baselist' ? checkList.has(data.id) : checkListPlayList.has(data.id) }" for="player-checkbox" @click.self="() => {checkEvnt(data)}">✔</label>
                 </div>
             </transition>
@@ -18,9 +18,9 @@
             </div>
             <div class="playList-list-mylist-list-remove-container" @click="makeArr(data.id)">
                 <i class="fa-solid fa-x"></i>
+                <!-- {{propsChange}} -->
             </div>
         </li>
-        {{listName}}
     </div>
 </template>
 
@@ -36,13 +36,8 @@ export default {
     },
     computed: {
         ...mapGetters(['baseList', 'currentMusic', 'checkList', 'allPlayListIdList', 'allPlayList', 'currentOpenId', 'checkListPlayList']),
-        // checkRender: function () {
-        //     if (this.checkList.size === this.baseList.length) {
-        //         return 'x'
-        //     } else return 'o'
-        // }
-        propsOffset: function () {
-            return this.currentListOffset
+        propsChange: function () {
+            return this.fromRenderOffset
         }
     },
     props: ['propsData', 'fromRenderOffset', 'currentListOffset', 'currnetPlayingMusic', 'listName'],
@@ -69,6 +64,7 @@ export default {
                 this.REMOVE_INDEX(obj)
             } else {
                 this.REMOVE_PLAYLIST_INDEX(obj)
+                console.log('emit@@')
                 this.$emit('fromChild')
             }
         },
@@ -93,19 +89,6 @@ export default {
                 }
             }
         }
-        // allCheckBtn () {
-        //     // this.$emit('fromChild')
-        //     if (this.allCheckOffset === '☐') {
-        //         for (const value of this.baseList) {
-        //             console.log(value)
-        //             this.SET_CHECKLIST_ADD(value)
-        //         }
-        //         this.allCheckOffset = '☑'
-        //     } else {
-        //         this.SET_CHECKLIST_CLEAR()
-        //         this.allCheckOffset = '☐'
-        //     }
-        // }
     }
 }
 </script>

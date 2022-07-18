@@ -12,14 +12,17 @@
       <div class="playerList-list-sidememu-order">
         리스트순
       </div>
-      <transition name="fadeList">
-      <div v-if="menuOffset" class="playserList-list-allCheck-Option" @click="allCheckBtn">
+      <transition-group name="fadeList">
+      <div v-if="menuOffset" key="firstDiv" class="playserList-list-allCheck-Option" @click="allCheckBtn">
         {{allCheckOffsetCurrent}}전체선택
       </div>
-      <div v-else class="playserList-list-allCheck-Option" @click="allCheckBtn">
+      <div v-if="!menuOffset && playListDetail" key="secondDiv" class="playserList-list-allCheck-Option" @click="allCheckBtn">
         {{allCheckOffsetPlaylist}}전체선택2
       </div>
-      </transition>
+      <div v-else key="third" class="playserList-list-allCheck-Option" @click="allCheckBtn">
+        {{allCheckOffsetPlaylist}}전체선택3
+      </div>
+      </transition-group>
       <div class="playerList-list-sidemenu-makePlayList" :style="menuOffset === true ?currentListOffset === true ? {color: 'rgb(240, 74, 74)'} : '' : playListOffset === true ? {color: 'rgb(240, 74, 74)'} : ''" @click="clickPlus">
         <i class="fa-solid fa-plus"></i>
       </div>
@@ -35,31 +38,15 @@
         <transition name="fade">
           <div v-if="menuOffset" class="playerList-list-mylist-list-nowPlayList">
             <PlayerListList listName="baselist" @fromChild="fromChild" :fromRenderOffset="renderOffset" :currentListOffset="currentListOffset" :currnetPlayingMusic="currnetPlayingMusic" ></PlayerListList>
-            <!-- <li v-for="(data, index) in baseList" :key="index" class="playerList-list-mylist-list-lists" :style="data.id === currentMusic.musicData.id ? currnetPlayingMusic : ''">
-              <transition name="fadeList">
-                <div v-if="currentListOffset" class="playerList-list-mylist-list-checkbox-container"  >
-                    <input v-model="checked[index]" type="checkbox"  class="playerList-list-mylist-check" id="player-checkbox"/>
-                    <label class="playerList-list-mylist-label" :class="{clickLabel: checkList.has(data.id) || renderOffset }" for="player-checkbox" @click.self="checkEvnt(data)">✔</label>
-                </div>
-              </transition>
-              <img :src="(data.thumbnail)" class="playerList-list-mylist-list-lists-img"  @click="listClick(data)"/>
-              <div class="playList-list-mylist-list-datas"  @click="listClick(data)">
-                <div class="playList-list-mylist-list-list-title">
-                  {{ data.title }}
-                </div>
-                <div class="playList-list-mylist-list-list-artist">
-                  {{ data.artist }}
-                </div>
-              </div>
-              <div class="playList-list-mylist-list-remove-container" @click="makeArr(data.id)">
-                <i class="fa-solid fa-x"></i>
-              </div>
-            </li> -->
           </div>
         </transition>
         <transition name="fade">
           <div v-if="!menuOffset && !playListDetail" class="playerList-list-mylist-list-nowPlayList">
             <li v-for="(data, index) in allPlayList" :key="index" class="playerList-list-mylist-list-playlist" @click="() => {SET_CURRENTOPENID(data[0]); playListDetail = true}">
+               <div v-if="playListOffset" class="playerList-list-mylist-list-checkbox-container"  >
+                    <input type="checkbox" class="playerList-list-mylist-check" id="player-checkbox"/>
+                    <label class="playerList-list-mylist-label" for="player-checkbox" @click.self="() => {checkEvnt(data)}">✔</label>
+                </div>
               <div class="playerList-list-mylist-list-nowPlayList-img-container">
                 <img v-for="(img, index) in getImgs(data[1])" :key="index" :src="img" class="plyerList-list-mylist-list-nowPlayList-img-1">
               </div>
@@ -98,12 +85,12 @@
     </div>
     <transition name=fadeList>
         <div v-if="makePlaylistOffset" class="playerList-list-mylist-makePlaylist">
-          <div class="playerList-list-mylist-modal-makeNewList-back" @click="makePlaylistOffset = !makePlaylistOffset">돌아가기</div>
+          <div class="playerList-list-mylist-modal-makeNewList-back" ><i class="fa-solid fa-x" @click="makePlaylistOffset = !makePlaylistOffset"></i></div>
           <div v-if="!makePlstlistTitleOffset" class="playerList-list-mylist-modal-makeNewList" @click="()=> {makePlstlistTitleOffset = !makePlstlistTitleOffset}"> + 새로운 리스트 생성</div>
           <div v-if="makePlstlistTitleOffset" class="playerList-list-mylist-modal-makeNewList-title">
             <input v-model="newListTitle" class="playerList-list-mylist-modal-makeNewList-title-input"/>
-            <div class="playerList-list-mylist-modal-makeNewList-title-add" @click="()=> {SET_PLAYLIST_NEWLIST(newListTitle); newListTitle = ''}">완료</div>
-            <div class="playerList-list-mylist-modal-makeNewList-title-close" @click="()=> {makePlstlistTitleOffset = !makePlstlistTitleOffset}">x</div>
+            <div class="playerList-list-mylist-modal-makeNewList-title-add" ><i class="fa-solid fa-circle-check" @click="setListEvnt"></i></div>
+            <div class="playerList-list-mylist-modal-makeNewList-title-close"><i class="fa-solid fa-circle-xmark" @click="()=> {makePlstlistTitleOffset = !makePlstlistTitleOffset}"></i></div>
           </div>
           <div class="playerList-list-mylist-modal-makeNewList-lists">
             <li v-for="(data, index) in allPlayList" @click="() => { if (checkList.size > 0) {SET_PLAYLIST_ADD(data[0]); renderOffset = renderOffset === null ? false : null}}" :key="index" class="playerList-list-mylist-modal-makeNewList-lists-li">
@@ -122,21 +109,6 @@ import PlayerListList from './PlayerList-list.vue'
 export default {
     computed: {
         ...mapGetters(['baseList', 'currentMusic', 'checkList', 'allPlayListIdList', 'allPlayList', 'currentOpenId', 'checkListPlayList'])
-        // checkRender: function () {
-        //     if (this.checkList.size === this.baseList.length) {
-        //         return 'x'
-        //     } else return 'o'
-        // }
-        // playListCurrent () {
-        //     console.log(1)
-        //     const data = this.allPlayList.get(this.currentOpenId)
-        //     const arr = []
-        //     if (data.data === undefined) return
-        //     for (let [key, value] of data.data.entries()) {
-        //         arr.push(value)
-        //     }
-        //     return arr
-        // }
     },
     components: {
         PlayerListList
@@ -180,6 +152,15 @@ export default {
     },
     methods: {
         ...mapMutations(['SET_CURRENTMUSIC', 'REMOVE_INDEX', 'SET_CHECKLIST_ADD', 'REMOVE_CHECKLIST_INDEX', 'SET_CHECKLIST_CLEAR', 'SET_PLAYLIST_NEWLIST', 'SET_PLAYLIST_ADD', 'SET_CURRENTOPENID', 'SET_CHECKLIST_PLAYLIST_CLEAR', 'SET_CHECKLIST_PLAYLIST_ADD', 'REMOVE_PLAYLIST_INDEX']),
+        setListEvnt () {
+            if (this.newListTitle.length === 0) {
+
+            } else {
+                this.SET_PLAYLIST_NEWLIST(this.newListTitle)
+                this.newListTitle = ''
+                alert('추가되었습니다.')
+            }
+        },
         makeArr (data) {
             const obj = new Map()
             obj.set(data, true)
@@ -191,10 +172,10 @@ export default {
                 this.REMOVE_INDEX(this.checkList)
             } else {
                 this.REMOVE_PLAYLIST_INDEX(this.checkListPlayList)
-                if (this.renderOffset === undefined) {
+                if (this.renderOffset) {
                     this.renderOffset = false
                 } else {
-                    this.renderOffset = undefined
+                    this.renderOffset = false
                 }
             }
         },
@@ -243,10 +224,10 @@ export default {
                     this.allCheckOffsetPlaylist = '☐'
                 }
             }
-            if (this.renderOffset === undefined) {
+            if (this.renderOffset) {
                 this.renderOffset = false
             } else {
-                this.renderOffset = undefined
+                this.renderOffset = true
             }
         },
         getImgs (data) {
@@ -255,15 +236,16 @@ export default {
             if (data.data === undefined) return
             for (let [key, value] of data.data.entries()) {
                 arr.push(value.thumbnail)
-                // if (arr.length === 4) return arr
+                if (arr.length === 4) return arr
             }
             return arr
         },
         fromChild () {
-            if (this.renderOffset === undefined) {
+            console.log('from')
+            if (this.renderOffset) {
                 this.renderOffset = false
             } else {
-                this.renderOffset = undefined
+                this.renderOffset = true
             }
             if (this.checkList.size === this.baseList.length) {
                 this.allCheckOffsetCurrent = '☑'
@@ -322,7 +304,7 @@ export default {
   justify-content: space-evenly;
 }
 .playerList-list-mylist-makePlaylist{
-  width: 400px;
+  width: 300px;
   height: 250px;
   border-radius: 13px;
   background-color: #242424;
@@ -382,7 +364,7 @@ export default {
   background-color: rgb(167, 167, 167);
   /* display: flex; */
   height: 50px;
-  width: 398px;
+  width: 383px;
   color: aliceblue;
   list-style: none;
   border: 1px solid wheat;
@@ -523,8 +505,18 @@ input[type="checkbox"]{
 .playerList-list-mylist-list-content-count{
   font-size: 14px;
 }
+.playerList-list-mylist-modal-makeNewList-lists{
+  margin-top: 2px;
+  width: 90%;
+  margin-left: 5%;
+  height: 170px;
+  font-size: 22px;
+  overflow-y: scroll;
+}
 .playerList-list-mylist-modal-makeNewList-lists-li{
   list-style: none;
+  border-bottom: 1px solid wheat;
+  cursor: pointer;
 }
 .playerList-list-mylist-list-nowPlayList-img-container{
   width: 50px;
@@ -535,11 +527,51 @@ input[type="checkbox"]{
   flex-wrap: wrap;
 }
 .playerList-list-mylist-list-nowPlayList-img-container>img {
-  width: 25px;
+  width: 24.5px;
   margin: 0px;
   padding: 0;
 }
 .playerList-list-mylist-list-nowPlayList-menu{
     color: antiquewhite;
+}
+.playerList-list-mylist-modal-makeNewList-back{
+  /* background-color: aqua; */
+  margin-top: 10px;
+  width: 97%;
+  font-size: 24px;
+margin-right: 3%;
+  display: flex;
+  justify-content: right;
+}
+.playerList-list-mylist-modal-makeNewList{
+  /* background-color: #fff;/// */
+  font-size: 20px;
+  padding: 5px;
+  border: 1px solid beige;
+  cursor: pointer;
+}
+.playerList-list-mylist-modal-makeNewList:hover, .playerList-list-mylist-modal-makeNewList-lists-li:hover, .playerList-list-mylist-modal-makeNewList-title-add:hover, .playerList-list-mylist-modal-makeNewList-title-close:hover {
+  opacity: 0.5;
+}
+.playerList-list-mylist-modal-makeNewList-title{
+  /* background-color: aqua; */
+  display: flex;
+}
+.playerList-list-mylist-modal-makeNewList-title>input {
+  margin-left: 20px;
+  height: 20px;
+  width: 200px;
+}
+.playerList-list-mylist-modal-makeNewList-title-add{
+  color: rgb(18, 111, 20);
+}
+.playerList-list-mylist-modal-makeNewList-title-close{
+  color: #c21e1e;
+}
+.playerList-list-mylist-modal-makeNewList-title-add, .playerList-list-mylist-modal-makeNewList-title-close{
+  font-size: 20px;
+  height: 25px;
+  margin-left: 5px;
+  cursor: pointer;
 }
 </style>
