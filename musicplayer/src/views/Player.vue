@@ -4,10 +4,10 @@
           header
       </div>
       <div class="player-body-container">
-        <PlayerController></PlayerController>
+        <PlayerController ref="controller"></PlayerController>
       </div>
       <div class="player-list-container">
-          <PlayerList></PlayerList>
+          <PlayerList @fromListToController = "fromListToController"></PlayerList>
       </div>
   </div>
 </template>
@@ -15,7 +15,7 @@
 <script>
 import PlayerController from '../components/PlayerController.vue'
 import PlayerList from '../components/PlayerList.vue'
-import { mapMutations, mapActions } from 'vuex'
+import { mapMutations } from 'vuex'
 export default {
     components: {
         PlayerController,
@@ -27,11 +27,13 @@ export default {
     },
     methods: {
         ...mapMutations([
-            'SET_CURRENTMUSIC_INIT'
-        ]),
-        ...mapActions([
+            'SET_CURRENTMUSIC_INIT',
             'FETCH_RANDOMMUSIC_LIST'
-        ])
+        ]),
+        fromListToController () {
+            this.$refs.controller.playMusicEnvt()
+            console.log('playerComponent')
+        }
     }
 }
 </script>

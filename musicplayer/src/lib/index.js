@@ -1,12 +1,4 @@
-export const findNextMucic = (baseMusicList, currentMusic) => {
-    // const index = baseMusicList.findIndex((el) => el.id === currentMusic.id) + 1
-    // if (index === 0) {
-    //     return -1
-    // } else if (index >= baseMusicList.length) {
-    //     return index - 1
-    // } else {
-    //     return index
-    // }
+export const findNextMusic = (baseMusicList, currentMusic) => {
     if (baseMusicList.length - 1 <= currentMusic.musicIndex) {
         return 0
     }

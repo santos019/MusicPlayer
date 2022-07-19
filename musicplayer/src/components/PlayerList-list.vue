@@ -49,7 +49,8 @@ export default {
             } else {
                 const data = this.allPlayList.get(Number(this.currentOpenId))
                 const arr = []
-                if (data.data === undefined) return
+                if (data === undefined || data.data === undefined) return
+                // eslint-disable-next-line no-unused-vars
                 for (let [key, value] of data.data.entries()) {
                     arr.push(value)
                 }
@@ -64,9 +65,9 @@ export default {
                 this.REMOVE_INDEX(obj)
             } else {
                 this.REMOVE_PLAYLIST_INDEX(obj)
-                console.log('emit@@')
                 this.$emit('fromChild')
             }
+            this.$emit('checkAllEvnt', this.listName)
         },
         listClick (data) {
             this.SET_CURRENTMUSIC(data)
@@ -74,7 +75,7 @@ export default {
         },
         checkEvnt (data) {
             this.$emit('fromChild')
-            console.log('ans', this.checkList.has(data.id))
+            console.log('ans')
             if (this.listName === 'baselist') {
                 if (this.checkList.has(data.id)) {
                     this.REMOVE_CHECKLIST_INDEX(data.id)
@@ -88,6 +89,7 @@ export default {
                     this.SET_CHECKLIST_PLAYLIST_ADD(data)
                 }
             }
+            this.$emit('checkAllEvnt', this.listName)
         }
     }
 }

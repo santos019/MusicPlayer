@@ -33,20 +33,20 @@
           <i class="fa-solid fa-backward-step" @click="()=> { if (baseList.length != 0) { FETCH_BEFOREMUSIC(); moveMusic() }}"></i>
           <i v-bind:class="[ playButton ? 'fa-solid fa-grip-lines-vertical' : 'fa-solid fa-play' ]" @click="playMusicEnvt"></i>
           <i class="fa-solid fa-forward-step" @click="()=>{  if (baseList.length != 0) { FETCH_NEXTMUSIC(); moveMusic() }}"></i>
-          <i class="fa-solid fa-shuffle" :style="shuffleImg[shuffleBtn]" @click="()=>{shuffleBtn = !shuffleBtn}"></i>
+          <i class="fa-solid fa-shuffle" :style="shuffleImg[shuffleBtn]" @click="()=>{FETCH_RANDOMMUSIC_LIST()}"></i>
       </div>
   </div>
 </template>
 
 <script>
 import testMusic from '../assets/Music/YourIntroAudionautix.mp3'
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 import { makeMusicTime } from '../lib/index'
 import bus from '../util/bus.js'
 // import myMusic from '../assets/Music/Pray-AnnoDominiBeats.mp3'
 export default {
     computed: {
-        ...mapGetters(['currentMusic', 'baseList', 'randomList'])
+        ...mapGetters(['currentMusic', 'baseList'])
     },
     data () {
         return {
@@ -92,7 +92,9 @@ export default {
         ...mapActions([
             'FETCH_NEXTMUSIC',
             'FETCH_BEFOREMUSIC',
-            'FETCH_RANDOMMUSIC',
+            'FETCH_RANDOMMUSIC'
+        ]),
+        ...mapMutations([
             'FETCH_RANDOMMUSIC_LIST'
         ]),
         rotateClickEvnt () {
@@ -126,13 +128,10 @@ export default {
             if (this.playButton) { // 노래가 로드 끝나면 실행되는것으로 변경
                 loadMusic.play()
                 const upGauge = 400 / this.currentMusic.musicData.replaytime
-                // console.log('upgauge', upGauge)
                 this.playingMusic = setInterval(() => {
-                    // console.log('currentTime', this.currentMusicTime)
                     this.ctx.fillStyle = 'rgb(240, 74, 74)'
                     this.playbarGauge = this.currentMusicTime * upGauge
                     this.ctx.fillRect(0, 0, this.playbarGauge, 100)
-                    // console.log('gautge', this.playbarGauge)
                     this.currentMusicTime = this.currentMusicTime + 0.1
                 }, 100)
                 this.playEndMusic = setTimeout(() => {
@@ -140,41 +139,18 @@ export default {
                     this.ctx.clearRect(0, 0, 400, 100)
                     this.playButton = false
                     this.currentMusicTime = 0
-                    console.log('this.randomList.size', this.randomList.size)
-                    if (this.setOffset === true) {
-                        this.FETCH_RANDOMMUSIC_LIST()
-                        this.FETCH_RANDOMMUSIC()
-                        this.playMusicEnvt()
-                        console.log(0)
-                        this.setOffset = false
-                    } else if (this.rotateBtn === 'first' && this.shuffleBtn === false && this.randomList.size !== 0) {
-                        this.FETCH_RANDOMMUSIC()
-                        this.playMusicEnvt()
-                        console.log('1')
-                    } else if (this.rotateBtn === 'first' && this.shuffleBtn === false && this.randomList.size === 0) {
-                        this.currentMusicTime = 0
-                        this.shuffleBtn = true
-                        this.setOffset = true
-                        console.log('2')
-                    } else if (this.rotateBtn === 'second' && this.shuffleBtn === false && this.randomList.size === 0) {
-                        this.FETCH_RANDOMMUSIC_LIST()
-                        this.playMusicEnvt()
-                        console.log('3')
-                    } else if (this.rotateBtn === 'second' && this.shuffleBtn === false && this.randomList.size !== 0) {
-                        this.FETCH_RANDOMMUSIC()
-                        this.playMusicEnvt()
-                        console.log('3-1')
-                    } else if (this.rotateBtn === 'third') {
-                        this.currentMusicTime = 0
-                        this.playMusicEnvt()
-                        console.log('4')
-                    } else if ((this.rotateBtn === 'second' || (this.currentMusic.musicIndex !== this.baseList.length - 1)) && this.baseList.length !== 0) {
+                    if (this.rotateBtn === 'first') {
+                        if (Number(this.currentMusic.musicIndex) >= this.baseList.length - 1) {
+                            this.currentMusicTime = 0
+                        } else {
+                            this.FETCH_NEXTMUSIC()
+                            this.playMusicEnvt()
+                        }
+                    } else if (this.rotateBtn === 'second') {
                         this.FETCH_NEXTMUSIC()
                         this.playMusicEnvt()
-                        console.log('5')
                     } else {
-                        this.currentMusicTime = 0
-                        console.log('6')
+                        this.playMusicEnvt()
                     }
                 }, (this.currentMusic.musicData.replaytime - this.currentMusicTime) * 1000 + 300)
             } else {

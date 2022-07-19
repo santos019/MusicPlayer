@@ -5,8 +5,6 @@ import { SET_CURRNETMUSIC,
     SET_CURRENTMUSIC_INIT,
     SET_CURRNETMUSIC_OBJECT,
     REMOVE_INDEX,
-    SET_MAP_OBJECT,
-    REMOVE_INDEX_RANDOMLIST,
     SET_CHECKLIST_ADD,
     REMOVE_CHECKLIST_INDEX,
     SET_CHECKLIST_CLEAR,
@@ -16,8 +14,14 @@ import { SET_CURRNETMUSIC,
     REMOVE_PLAYLIST_INDEX,
     REMOVE_CHECKLIST_PLAYLIST_INDEX,
     SET_CHECKLIST_PLAYLIST_ADD,
-    SET_CHECKLIST_PLAYLIST_CLEAR } from './mutation-type'
-import { findNextMucic, findBeforeMusic } from '../lib/index'
+    SET_CHECKLIST_PLAYLIST_CLEAR,
+    REMOVE_ALLPLAYLIST_CHECKLIST_INDEX,
+    SET_ALLCHECKLIST_PLAYLIST_ADD,
+    REMOVE_ALLPLAYLIST_INDEX,
+    SET_CHECKLIST_ALLPLAYLIST_CLEAR,
+    CHANGE_BASELIST_INIT,
+    FETCH_RANDOMMUSIC_LIST } from './mutation-type'
+import { findNextMusic, findBeforeMusic } from '../lib/index'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -25,14 +29,15 @@ export default new Vuex.Store({
         baseList: musicData,
         footprintList: {
         },
-        randomList: [],
+        // randomList: [],
         allPlayListIdList: [],
         allPlayList: new Map(),
         allPlayListIdIndex: Number(JSON.parse(localStorage.getItem('allPlayListIdIndex'))) || 0,
         currentMusic: {},
         checkList: new Map(),
         currentOpenId: 0,
-        checkListPlayList: new Map()
+        checkListPlayList: new Map(),
+        checkAllList: new Map()
     },
     getters: {
         baseList (state) {
@@ -41,9 +46,9 @@ export default new Vuex.Store({
         currentMusic (state) {
             return state.currentMusic
         },
-        randomList (state) {
-            return state.randomList
-        },
+        // randomList (state) {
+        //     return state.randomList
+        // },
         checkList (state) {
             return state.checkList
         },
@@ -58,9 +63,27 @@ export default new Vuex.Store({
         },
         checkListPlayList (state) {
             return state.checkListPlayList
+        },
+        checkAllList (state) {
+            return state.checkAllList
         }
     },
     mutations: {
+        [CHANGE_BASELIST_INIT]: (state) => {
+            const data = state.allPlayList.get(state.currentOpenId).data
+            if (!data) return
+            const arr = []
+            // eslint-disable-next-line no-unused-vars
+            for (let [key, value] of data.entries()) {
+                arr.push(value)
+            }
+            state.baseList = arr
+            const currentMusicData = {
+                musicData: state.baseList[0],
+                musicIndex: 0
+            }
+            state.currentMusic = currentMusicData
+        },
         [SET_CURRENTMUSIC_INIT]: (state) => {
             if (JSON.parse(localStorage.getItem('currentMusic'))) {
                 state.currentMusic = JSON.parse(localStorage.getItem('currentMusic'))
@@ -81,11 +104,17 @@ export default new Vuex.Store({
         [SET_CHECKLIST_PLAYLIST_ADD]: (state, data) => {
             state.checkListPlayList.set(data.id, data)
         },
+        [SET_ALLCHECKLIST_PLAYLIST_ADD]: (state, data) => {
+            state.checkAllList.set(data, null)
+        },
         [SET_CHECKLIST_CLEAR]: (state) => {
             state.checkList.clear()
         },
         [SET_CHECKLIST_PLAYLIST_CLEAR]: (state) => {
             state.checkListPlayList.clear()
+        },
+        [SET_CHECKLIST_ALLPLAYLIST_CLEAR]: (state) => {
+            state.checkAllList.clear()
         },
         [SET_CURRNETMUSIC]: (state, music) => {
             const data = {
@@ -102,10 +131,9 @@ export default new Vuex.Store({
         [REMOVE_INDEX]: (state, removeIds) => {
             let removeIndex = 0
             for (let id of removeIds.keys()) {
-                console.log('id', id)
                 removeIndex = state.baseList.findIndex(el => String(el.id) === String(id))
                 state.baseList.splice(removeIndex, 1)
-                state.randomList.delete(Number(id))
+                // state.randomList.delete(Number(id))
                 state.checkList.delete(Number(id))
             }
             for (const value in state.baseList) {
@@ -114,34 +142,35 @@ export default new Vuex.Store({
                     state.currentMusic.musicIndex = Number(value)
                 }
             }
-            // removeIds.clear()
         },
         [REMOVE_PLAYLIST_INDEX]: (state, removeIds) => {
             for (let id of removeIds.keys()) {
-                console.log('id', id)
                 state.allPlayList.get(state.currentOpenId).data.delete(id)
+                state.checkListPlayList.delete(id)
+            }
+        },
+        [REMOVE_ALLPLAYLIST_CHECKLIST_INDEX]: (state, removeIds) => {
+            for (let id of removeIds.keys()) {
+                state.allPlayList.delete(id)
+                state.checkAllList.delete(id)
             }
         },
         [REMOVE_CHECKLIST_INDEX]: (state, id) => {
             state.checkList.delete(id)
         },
+        [REMOVE_ALLPLAYLIST_INDEX]: (state, id) => {
+            state.checkAllList.delete(id)
+        },
         [REMOVE_CHECKLIST_PLAYLIST_INDEX]: (state, id) => {
             state.checkListPlayList.delete(id)
         },
-        [SET_MAP_OBJECT]: (state, data) => {
-            state.randomList = data
-        },
-        [REMOVE_INDEX_RANDOMLIST]: (state, value) => {
-            state.randomList.delete(value)
-        },
+        // [SET_MAP_OBJECT]: (state, data) => {
+        //     state.randomList = data
+        // },
+        // [REMOVE_INDEX_RANDOMLIST]: (state, value) => {
+        //     state.randomList.delete(value)
+        // },
         [SET_PLAYLIST_NEWLIST]: (state, title) => {
-            // const data = {
-            //     'id': state.allPlayListIdIndex,
-            //     'title': title,
-            //     'order': []
-            // }
-            // console.log(data)
-            // state.allPlayListIdList.push(data)
             state.allPlayList.set(state.allPlayListIdIndex++, { title })
         },
         [SET_PLAYLIST_ADD]: (state, id) => {
@@ -149,28 +178,28 @@ export default new Vuex.Store({
             const data = new Map()
             if (state.allPlayList.get(id).data) {
                 for (let[key, value] of state.allPlayList.get(id).data.entries()) {
-                    console.log(key + ' : ' + value)
                     data.set(key, value)
                 }
             }
             for (let[key, value] of state.checkList.entries()) {
-                console.log(key + ' : ' + value)
                 data.set(key, value)
             }
-            // mapObj.set('test', null)
-            // console.log('check', mapObj)
-            console.log('data', data)
             state.allPlayList.get(id).data = data
             state.checkList.clear()
-            // Vue.set(state.checkList, 0, null)
         },
         [SET_CURRENTOPENID]: (state, id) => {
             state.currentOpenId = id
+        },
+        [FETCH_RANDOMMUSIC_LIST] (state) {
+            state.baseList.sort(() => Math.random() - 0.5)
+            const index = state.baseList.findIndex((el) => el.id === state.currentMusic.musicIndex)
+            state.currentMusic.musicIndex = index
         }
+
     },
     actions: {
         FETCH_NEXTMUSIC ({ commit, state }) {
-            const findResult = findNextMucic(state.baseList, state.currentMusic)
+            const findResult = findNextMusic(state.baseList, state.currentMusic)
             const data = { musicData: state.baseList[findResult] === undefined ? -1 : state.baseList[findResult],
                 musicIndex: findResult
             }
@@ -183,31 +212,17 @@ export default new Vuex.Store({
                 musicIndex: findResult
             }
             commit(SET_CURRNETMUSIC_OBJECT, data)
-        },
-        FETCH_RANDOMMUSIC_LIST ({ commit, state }) {
-            const arr = []
-            const arrObj = new Map()
-            for (let num = 0; num < state.baseList.length; num++) {
-                arr[num] = state.baseList[num].id
-            }
-            arr.sort(() => Math.random() - 0.5)
-            for (let num = 0; num < state.baseList.length; num++) {
-                arrObj.set(arr[num], true)
-            }
-            const deletIndex = state.baseList.findIndex(el => el.id === state.currentMusic.musicData.id)
-            if (state.baseList[deletIndex]) { arrObj.delete(state.baseList[deletIndex].id) }
-            commit(SET_MAP_OBJECT, arrObj)
-        },
-        FETCH_RANDOMMUSIC ({ commit, state }) {
-            const iterator = state.randomList.keys()
-            const value = iterator.next().value
-            const findResult = state.baseList.findIndex(el => el.id === value)
-            const data = { musicData: state.baseList[findResult],
-                musicIndex: findResult
-            }
-            commit(REMOVE_INDEX_RANDOMLIST, value)
-            commit(SET_CURRNETMUSIC_OBJECT, data)
         }
+        // FETCH_RANDOMMUSIC ({ commit, state }) {
+        //     const iterator = state.randomList.keys()
+        //     const value = iterator.next().value
+        //     const findResult = state.baseList.findIndex(el => el.id === value)
+        //     const data = { musicData: state.baseList[findResult],
+        //         musicIndex: findResult
+        //     }
+        //     commit(REMOVE_INDEX_RANDOMLIST, value)
+        //     commit(SET_CURRNETMUSIC_OBJECT, data)
+        // }
     }
 }
 )
