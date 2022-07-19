@@ -1,6 +1,10 @@
 <template>
-    <div>
-        <li v-for="(data, index) in listData()" :key="`${index}${propsChange}`" class="playerList-list-mylist-list-lists" :style="data.id === currentMusic.musicData.id ? currnetPlayingMusic : ''">
+    <div class="playerList-list-mylist-list-lists-container"  >
+        <li v-for="(data, index) in listData()" @drop.prevent="onDrop($event, index, data)" draggable="true"
+         @dragenter.prevent
+         @dragover.prevent
+         @dragstart="startDrag($event, index, data)"
+         :key="`${index}${propsChange}`" class="playerList-list-mylist-list-lists" :style="data.id === currentMusic.musicData.id ? currnetPlayingMusic : ''">
             <transition name="fadeList">
                 <div v-if="currentListOffset" class="playerList-list-mylist-list-checkbox-container"  >
                     <input type="checkbox" :value="propsChange"  class="playerList-list-mylist-check" id="player-checkbox"/>
@@ -31,7 +35,8 @@ import bus from '../util/bus.js'
 export default {
     data () {
         return {
-            // renderOffset: false
+            startDropItem: null,
+            onDropItem: null
         }
     },
     computed: {
@@ -42,7 +47,57 @@ export default {
     },
     props: ['propsData', 'fromRenderOffset', 'currentListOffset', 'currnetPlayingMusic', 'listName'],
     methods: {
-        ...mapMutations(['SET_CURRENTMUSIC', 'REMOVE_INDEX', 'SET_CHECKLIST_ADD', 'REMOVE_CHECKLIST_INDEX', 'SET_CHECKLIST_CLEAR', 'SET_PLAYLIST_NEWLIST', 'SET_PLAYLIST_ADD', 'REMOVE_CHECKLIST_PLAYLIST_INDEX', 'SET_CHECKLIST_PLAYLIST_ADD', 'REMOVE_PLAYLIST_INDEX']),
+        ...mapMutations(['DRAG_PLAYLIST_CHAGE_INIT', 'DRAG_BASELIST_CHANGE_INIT', 'DRAG_BASELIST_REMOVE', 'SET_CURRENTMUSIC', 'REMOVE_INDEX', 'SET_CHECKLIST_ADD', 'REMOVE_CHECKLIST_INDEX', 'SET_CHECKLIST_CLEAR', 'SET_PLAYLIST_NEWLIST', 'SET_PLAYLIST_ADD', 'REMOVE_CHECKLIST_PLAYLIST_INDEX', 'SET_CHECKLIST_PLAYLIST_ADD', 'REMOVE_PLAYLIST_INDEX']),
+        onDrop (event, index, data) {
+            console.log('ondrop', event)
+            console.log('ondropData', index)
+            if (this.listName === 'baselist') {
+                const arr = []
+                for (const value in this.baseList) {
+                    if (Number(value) === Number(this.startDropItem)) {
+                        continue
+                    }
+                    if (Number(value) === Number(index)) {
+                        arr.push(this.baseList[this.startDropItem])
+                    }
+                    arr.push(this.baseList[value])
+                }
+                console.log('arr', arr)
+                // this.DRAG_BASELIST_REMOVE(this.startDropItem)
+                this.DRAG_BASELIST_CHANGE_INIT(arr)
+            } else {
+                const arr = new Map()
+                const Data = this.allPlayList.get(this.currentOpenId).data
+                console.log('Data', Data)
+                const addData = Data.get(this.startDropItem)
+                console.log('addData', addData)
+                let cnt = 0
+                for (const [key, value] of Data.entries()) {
+                    if (Number(key) === Number(addData.id)) {
+                        cnt++
+                        continue
+                    }
+                    if (Number(cnt) === Number(index)) {
+                        console.log('cnt', value.title)
+                        arr.set(addData.id, addData)
+                    }
+                    console.log('else', value.title)
+                    arr.set(key, value)
+                    cnt++
+                }
+                console.log('arr', arr)
+                this.DRAG_PLAYLIST_CHAGE_INIT(arr)
+                this.$emit('renderOffsetChange')
+            }
+        },
+        startDrag (event, index, data) {
+            if (this.listName === 'baselist') {
+                // this.startDropItem = this.baseList[index]
+                this.startDropItem = index
+            } else {
+                this.startDropItem = data.id
+            }
+        },
         listData () {
             if (this.listName === 'baselist') {
                 return this.baseList

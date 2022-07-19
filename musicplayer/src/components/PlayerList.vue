@@ -37,7 +37,7 @@
       <div class="playerList-list-mylist-list-container">
         <transition name="fade">
           <div v-if="menuOffset" class="playerList-list-mylist-list-nowPlayList">
-            <PlayerListList listName="baselist" @fromChild="fromChild" @checkAllEvnt="checkAllEvnt" :fromRenderOffset="renderOffset" :currentListOffset="currentListOffset" :currnetPlayingMusic="currnetPlayingMusic" ></PlayerListList>
+            <PlayerListList listName="baselist" @fromChild="fromChild" @checkAllEvnt="checkAllEvnt" @renderOffsetChange="renderOffsetChange" :fromRenderOffset="renderOffset" :currentListOffset="currentListOffset" :currnetPlayingMusic="currnetPlayingMusic" ></PlayerListList>
           </div>
         </transition>
         <transition name="fade">
@@ -79,7 +79,7 @@
               <div class="playerList-list-mylist-list-nowPlayList-play" @click="playPlayList"><i class="fa-solid fa-caret-right"></i> 전체 재생</div>
               <div class="playerList-list-mylist-list-nowPlayList-shuffle" @click="playPlayListShuffle"><i class="fa-solid fa-shuffle"></i> 랜덤 재생</div>
             </div>
-              <PlayerListList listName="playlist" @fromChild="fromChild" @checkAllEvnt="checkAllEvnt" :fromRenderOffset="renderOffset" :currentListOffset="playListOffset" :currnetPlayingMusic="currnetPlayingMusic" ></PlayerListList>
+              <PlayerListList listName="playlist" @fromChild="fromChild" @checkAllEvnt="checkAllEvnt" @renderOffsetChange="renderOffsetChange" :fromRenderOffset="renderOffset" :currentListOffset="playListOffset" :currnetPlayingMusic="currnetPlayingMusic" ></PlayerListList>
           </div>
         </transition>
       </div>

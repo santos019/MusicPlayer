@@ -20,7 +20,10 @@ import { SET_CURRNETMUSIC,
     REMOVE_ALLPLAYLIST_INDEX,
     SET_CHECKLIST_ALLPLAYLIST_CLEAR,
     CHANGE_BASELIST_INIT,
-    FETCH_RANDOMMUSIC_LIST } from './mutation-type'
+    FETCH_RANDOMMUSIC_LIST,
+    DRAG_BASELIST_CHANGE_INIT,
+    DRAG_BASELIST_REMOVE,
+    DRAG_PLAYLIST_CHAGE_INIT } from './mutation-type'
 import { findNextMusic, findBeforeMusic } from '../lib/index'
 Vue.use(Vuex)
 
@@ -69,6 +72,17 @@ export default new Vuex.Store({
         }
     },
     mutations: {
+        [DRAG_PLAYLIST_CHAGE_INIT]: (state, data) => {
+            state.allPlayList.get(state.currentOpenId).data = data
+        },
+        [DRAG_BASELIST_CHANGE_INIT]: (state, data) => {
+            state.baseList = data
+            const index = state.baseList.findIndex((el) => el.id === state.currentMusic.musicData.id)
+            state.currentMusic.musicIndex = index
+        },
+        [DRAG_BASELIST_REMOVE]: (state, index) => {
+            state.baseList.splice(index, 1)
+        },
         [CHANGE_BASELIST_INIT]: (state) => {
             const data = state.allPlayList.get(state.currentOpenId).data
             if (!data) return
@@ -192,7 +206,7 @@ export default new Vuex.Store({
         },
         [FETCH_RANDOMMUSIC_LIST] (state) {
             state.baseList.sort(() => Math.random() - 0.5)
-            const index = state.baseList.findIndex((el) => el.id === state.currentMusic.musicIndex)
+            const index = state.baseList.findIndex((el) => el.id === state.currentMusic.musicData.id)
             state.currentMusic.musicIndex = index
         }
 
