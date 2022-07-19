@@ -4,7 +4,7 @@
           header
       </div>
       <div class="player-body-container">
-        <PlayerController ref="controller"></PlayerController>
+        <PlayerController @playButtonChange = "playButtonChange" ref="controller"></PlayerController>
       </div>
       <div class="player-list-container">
           <PlayerList @fromListToController = "fromListToController"></PlayerList>
@@ -31,8 +31,10 @@ export default {
             'FETCH_RANDOMMUSIC_LIST'
         ]),
         fromListToController () {
-            this.$refs.controller.playMusicEnvt()
-            console.log('playerComponent')
+            this.$refs.controller.initPlayMusic()
+        },
+        playButtonChange (playButton) {
+            console.log('playButton', playButton)
         }
     }
 }
@@ -56,4 +58,11 @@ export default {
 .player-list-container{
     height: 370px;
 }
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    background-color: #242424;
+}
+::-webkit-scrollbar-track {background: #242424; -webkit-border-radius: 10px; border-radius:10px;}
+::-webkit-scrollbar-thumb {height: 50px; width: 50px; background: rgb(137, 137, 137); -webkit-border-radius: 8px; border-radius: 8px; -webkit-box-shadow: inset 0 0 4px rgba(0,0,0,.1)}
 </style>

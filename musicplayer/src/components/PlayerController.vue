@@ -7,7 +7,11 @@
             <i @mouseover="isHovering = true"  @mouseout="isHovering = false" v-bind:class="[ false || isHovering ? 'fa-solid fa-heart' : 'fa-regular fa-heart'  ]"></i>
       </div>
       <div class="playerController-playbar-container">
-          <canvas class="playerController-playbar-canvas" width="400" ref="playerControllerPlaybarCanvasRef">
+          <canvas class="playerController-playbar-canvas" width="400" ref="playerControllerPlaybarCanvasRef"
+           @mouseup = "dragGaugebarMouseup($event)"
+           @mousedown = "dragGaugebarMousedown($event)"
+           @mousemove = "dargGaugebarMousemove($event)"
+           @mouseout = "dragGaugebarMouseout($event)">
           </canvas>
            <audio id= "loadMusic" preload= 'auto' ref="audioRef">
                <source :src= "loadMusic" type="audio/mp3"/>
@@ -29,7 +33,6 @@
       </div>
       <div class="playerController-playmenu-container">
           <i class="fa-solid fa-repeat" :style="rotateImg[rotateBtn]" @click="() => { rotateClickEvnt() }"></i>
-          <!-- <img :src="rotateImg[rotateBtn].img" :style="rotateImg[rotateBtn].style" class="playerController-playermenu-repeat" @click="() => { rotateClickEvnt() }"/> -->
           <i class="fa-solid fa-backward-step" @click="()=> { if (baseList.length != 0) { FETCH_BEFOREMUSIC(); moveMusic() }}"></i>
           <i v-bind:class="[ playButton ? 'fa-solid fa-grip-lines-vertical' : 'fa-solid fa-play' ]" @click="playMusicEnvt"></i>
           <i class="fa-solid fa-forward-step" @click="()=>{  if (baseList.length != 0) { FETCH_NEXTMUSIC(); moveMusic() }}"></i>
@@ -46,14 +49,13 @@ import bus from '../util/bus.js'
 // import myMusic from '../assets/Music/Pray-AnnoDominiBeats.mp3'
 export default {
     computed: {
-        ...mapGetters(['currentMusic', 'baseList'])
+        ...mapGetters(['currentMusic', 'baseList', 'playButton'])
     },
     data () {
         return {
             isHovering: false, // store.item값으로 수정하기,
             loadMusic: testMusic,
             ctx: null,
-            playButton: false,
             playingMusic: null,
             playbarGauge: 0,
             playEndMusic: null,
@@ -79,7 +81,10 @@ export default {
                     color: 'rgb(192, 191, 189)'
                 }
             },
-            setOffset: false
+            dragOffset: false,
+            dragX: 0,
+            dragY: 0,
+            upGauge: 0
         }
     },
     mounted () {
@@ -95,12 +100,59 @@ export default {
             'FETCH_RANDOMMUSIC'
         ]),
         ...mapMutations([
-            'FETCH_RANDOMMUSIC_LIST'
+            'FETCH_RANDOMMUSIC_LIST',
+            'CHANGE_PLAYBUTTON'
         ]),
+        dragGaugebarMousedown (event) {
+            // console.log('mousedown', event)
+            this.dragX = event.offsetX
+            this.dragY = event.offsetY
+            this.dragOffset = true
+            clearTimeout(this.playEndMusic)
+            clearInterval(this.playingMusic)
+        },
+        dragGaugebarMouseout (event) {
+            // console.log('mouseout', event)
+        },
+        dargGaugebarMousemove (event) {
+            if (!this.dragOffset) return
+            // console.log('mousemove', event)
+            this.dragX = event.offsetX
+            this.dragY = event.offsetY
+            if (this.playbarGauge > this.dragX) {
+                this.ctx.clearRect(this.dragX, 0, this.playbarGauge - this.dragX + 1, 100)
+            } else {
+                this.ctx.fillRect(0, 0, this.dragX, 100)
+            }
+            this.playbarGauge = this.dragX
+        },
+        dragGaugebarMouseup (event) {
+            this.dragOffset = false
+            this.dragX = event.offsetX
+            this.drawGaugebarChange()
+            if (this.playButton) {
+                this.playingMusicEvnt()
+                this.playEndMusicEvnt()
+            }
+        },
+        drawGaugebarChange () {
+            this.ctx.fillStyle = 'rgb(240, 74, 74)'
+            if (this.upGauge === 0) {
+                this.upGauge = 400 / this.currentMusic.musicData.replaytime
+            }
+            if (this.playbarGauge > this.dragX) {
+                console.log('playbar>this.x')
+                this.ctx.clearRect(this.dragX, 0, this.playbarGauge - this.dragX + 1, 100)
+            } else {
+                this.ctx.fillRect(0, 0, this.dragX, 100)
+            }
+            this.playbarGauge = this.dragX
+            this.currentMusicTime = this.playbarGauge / this.upGauge
+            // clearTimeout(this.playEndMusic)
+        },
         rotateClickEvnt () {
             if (this.rotateBtn === 'first') {
                 this.rotateBtn = 'second'
-                // this.$set(this.rotateShuffleBtn, 0, 'second')
             } else if (this.rotateBtn === 'second') {
                 this.rotateBtn = 'third'
             } else {
@@ -114,55 +166,75 @@ export default {
             this.currentMusicTime = 0
             console.log('stop')
             this.ctx.clearRect(0, 0, 400, 100)
-            this.playButton = false
+            this.CHANGE_PLAYBUTTON(false)
+            // this.playButton = false
             clearInterval(this.playingMusic)
             clearTimeout(this.playEndMusic)
             this.playMusicEnvt()
         },
         playMusicEnvt () {
-            const loadMusic = this.$refs.audioRef
+            // const loadMusic = this.$refs.audioRef
             // console.log('재생')
             // console.log('duration', loadMusic.duration)
             // console.log('currentTime', loadMusic.currentTime)
-            this.playButton = !this.playButton
+            // this.playButton = !this.playButton
+            this.CHANGE_PLAYBUTTON(!this.playButton)
+            this.upGauge = 400 / this.currentMusic.musicData.replaytime
+
             if (this.playButton) { // 노래가 로드 끝나면 실행되는것으로 변경
-                loadMusic.play()
-                const upGauge = 400 / this.currentMusic.musicData.replaytime
-                this.playingMusic = setInterval(() => {
-                    this.ctx.fillStyle = 'rgb(240, 74, 74)'
-                    this.playbarGauge = this.currentMusicTime * upGauge
-                    this.ctx.fillRect(0, 0, this.playbarGauge, 100)
-                    this.currentMusicTime = this.currentMusicTime + 0.1
-                }, 100)
-                this.playEndMusic = setTimeout(() => {
-                    clearInterval(this.playingMusic)
-                    this.ctx.clearRect(0, 0, 400, 100)
-                    this.playButton = false
-                    this.currentMusicTime = 0
-                    if (this.rotateBtn === 'first') {
-                        if (Number(this.currentMusic.musicIndex) >= this.baseList.length - 1) {
-                            this.currentMusicTime = 0
-                        } else {
-                            this.FETCH_NEXTMUSIC()
-                            this.playMusicEnvt()
-                        }
-                    } else if (this.rotateBtn === 'second') {
-                        this.FETCH_NEXTMUSIC()
-                        this.playMusicEnvt()
-                    } else {
-                        this.playMusicEnvt()
-                    }
-                }, (this.currentMusic.musicData.replaytime - this.currentMusicTime) * 1000 + 300)
+                // loadMusic.play()
+                this.playingMusicEvnt()
+                this.playEndMusicEvnt()
             } else {
                 console.log('정지')
-                loadMusic.pause()
+                // loadMusic.pause()
                 clearInterval(this.playingMusic)
                 clearTimeout(this.playEndMusic)
             }
-            if (loadMusic.currentTime === 0) {
+            // if (loadMusic.currentTime === 0) {
+            //     this.ctx.clearRect(0, 0, 400, 100)
+            // }
+        },
+        playingMusicEvnt () {
+            this.playingMusic = setInterval(() => {
+                this.ctx.fillStyle = 'rgb(240, 74, 74)'
+                this.playbarGauge = this.currentMusicTime * this.upGauge
+                this.ctx.fillRect(0, 0, this.playbarGauge, 100)
+                this.currentMusicTime = this.currentMusicTime + 0.1
+            }, 100)
+        },
+        playEndMusicEvnt () {
+            this.playEndMusic = setTimeout(() => {
+                clearInterval(this.playingMusic)
                 this.ctx.clearRect(0, 0, 400, 100)
-            }
+                // this.playButton = false
+                this.CHANGE_PLAYBUTTON(false)
+                this.currentMusicTime = 0
+                if (this.rotateBtn === 'first') {
+                    if (Number(this.currentMusic.musicIndex) >= this.baseList.length - 1) {
+                        this.currentMusicTime = 0
+                    } else {
+                        this.FETCH_NEXTMUSIC()
+                        this.playMusicEnvt()
+                    }
+                } else if (this.rotateBtn === 'second') {
+                    this.FETCH_NEXTMUSIC()
+                    this.playMusicEnvt()
+                } else {
+                    this.playMusicEnvt()
+                }
+            }, (this.currentMusic.musicData.replaytime - this.currentMusicTime) * 1000 + 300)
+        },
+        initPlayMusic () {
+            // this.playButton = false
+            this.CHANGE_PLAYBUTTON(false)
+            this.currentMusicTime = 0
+            this.ctx.clearRect(0, 0, 400, 100)
+            clearInterval(this.playingMusic)
+            clearTimeout(this.playEndMusic)
+            this.playMusicEnvt()
         }
+
     }
 }
 </script>
@@ -189,6 +261,9 @@ export default {
     width: 100%;
     height: 18px;
     background-color: #242424;
+}
+.playerController-playbar-canvas:hover{
+    height: 18px;
 }
 .playerController-playmenu-container{
     width: 100%;
@@ -227,11 +302,11 @@ export default {
     width: 400px;
     height: 6px;
     background-color: #000000;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 .playerController-playbar-data-container{
     width: 100%;
-    height: 30px;
+    height: 40px;
     background-color: #242424;
     display: flex;
 }
@@ -240,7 +315,7 @@ export default {
     width: 20%;
     font-size: 14px;
     text-align: center;
-    line-height: 0.7;
+    line-height: 1.5;
     margin-left: 40px;
     background-color: #242424;
     color: rgb(205, 205, 205);
@@ -249,6 +324,7 @@ export default {
     width: 70%;
     height: 100%;
     margin-left: 3px;
+    margin-top: 5px;
     background-color: #242424;
     color: rgb(205, 205, 205);
     font-size: 13px;
@@ -269,7 +345,7 @@ export default {
     font-size: 15px;
     width: 10%;
     text-align: center;
-    line-height: 0.9;
+    line-height: 1.6;
     margin-right: 5px;
     background-color: #242424;
     color: rgb(205, 205, 205);

@@ -23,7 +23,9 @@ import { SET_CURRNETMUSIC,
     FETCH_RANDOMMUSIC_LIST,
     DRAG_BASELIST_CHANGE_INIT,
     DRAG_BASELIST_REMOVE,
-    DRAG_PLAYLIST_CHAGE_INIT } from './mutation-type'
+    DRAG_PLAYLIST_CHAGE_INIT,
+    CHANGE_BASELIST_RANDOM_INIT,
+    CHANGE_PLAYBUTTON } from './mutation-type'
 import { findNextMusic, findBeforeMusic } from '../lib/index'
 Vue.use(Vuex)
 
@@ -40,9 +42,13 @@ export default new Vuex.Store({
         checkList: new Map(),
         currentOpenId: 0,
         checkListPlayList: new Map(),
-        checkAllList: new Map()
+        checkAllList: new Map(),
+        playButton: false
     },
     getters: {
+        playButton (state) {
+            return state.playButton
+        },
         baseList (state) {
             return state.baseList
         },
@@ -72,6 +78,9 @@ export default new Vuex.Store({
         }
     },
     mutations: {
+        [CHANGE_PLAYBUTTON]: (state, newState) => {
+            state.playButton = newState
+        },
         [DRAG_PLAYLIST_CHAGE_INIT]: (state, data) => {
             state.allPlayList.get(state.currentOpenId).data = data
         },
@@ -92,6 +101,23 @@ export default new Vuex.Store({
                 arr.push(value)
             }
             state.baseList = arr
+            const currentMusicData = {
+                musicData: state.baseList[0],
+                musicIndex: 0
+            }
+            state.currentMusic = currentMusicData
+        },
+        [CHANGE_BASELIST_RANDOM_INIT]: (state) => {
+            const data = state.allPlayList.get(state.currentOpenId).data
+            if (!data) return
+            const arr = []
+            // eslint-disable-next-line no-unused-vars
+            for (let [key, value] of data.entries()) {
+                arr.push(value)
+            }
+            state.baseList = arr
+            state.baseList.sort(() => Math.random() - 0.5)
+            // const index = state.baseList.findIndex((el) => el.id === state.currentMusic.musicData.id)
             const currentMusicData = {
                 musicData: state.baseList[0],
                 musicIndex: 0
@@ -204,7 +230,7 @@ export default new Vuex.Store({
         [SET_CURRENTOPENID]: (state, id) => {
             state.currentOpenId = id
         },
-        [FETCH_RANDOMMUSIC_LIST] (state) {
+        [FETCH_RANDOMMUSIC_LIST]: (state) => {
             state.baseList.sort(() => Math.random() - 0.5)
             const index = state.baseList.findIndex((el) => el.id === state.currentMusic.musicData.id)
             state.currentMusic.musicIndex = index

@@ -37,7 +37,7 @@
       <div class="playerList-list-mylist-list-container">
         <transition name="fade">
           <div v-if="menuOffset" class="playerList-list-mylist-list-nowPlayList">
-            <PlayerListList listName="baselist" @fromChild="fromChild" @checkAllEvnt="checkAllEvnt" @renderOffsetChange="renderOffsetChange" :fromRenderOffset="renderOffset" :currentListOffset="currentListOffset" :currnetPlayingMusic="currnetPlayingMusic" ></PlayerListList>
+            <PlayerListList listName="baselist" @fromChild="fromChild" @checkAllEvnt="checkAllEvnt" @renderOffsetChange="renderOffsetChange" :fromRenderOffset="renderOffset" :currentListOffset="currentListOffset" ></PlayerListList>
           </div>
         </transition>
         <transition name="fade">
@@ -79,7 +79,7 @@
               <div class="playerList-list-mylist-list-nowPlayList-play" @click="playPlayList"><i class="fa-solid fa-caret-right"></i> 전체 재생</div>
               <div class="playerList-list-mylist-list-nowPlayList-shuffle" @click="playPlayListShuffle"><i class="fa-solid fa-shuffle"></i> 랜덤 재생</div>
             </div>
-              <PlayerListList listName="playlist" @fromChild="fromChild" @checkAllEvnt="checkAllEvnt" @renderOffsetChange="renderOffsetChange" :fromRenderOffset="renderOffset" :currentListOffset="playListOffset" :currnetPlayingMusic="currnetPlayingMusic" ></PlayerListList>
+              <PlayerListList listName="playlist" @fromChild="fromChild" @checkAllEvnt="checkAllEvnt" @renderOffsetChange="renderOffsetChange" :fromRenderOffset="renderOffset" :currentListOffset="playListOffset" ></PlayerListList>
           </div>
         </transition>
       </div>
@@ -154,14 +154,11 @@ export default {
                     backgroundColor: '#242424',
                     color: 'rgb(192, 191, 189)'
                 }
-            },
-            currnetPlayingMusic: {
-                backgroundColor: '#3a3a3a'
             }
         }
     },
     methods: {
-        ...mapMutations(['SET_CURRENTMUSIC', 'REMOVE_INDEX', 'SET_CHECKLIST_ADD', 'REMOVE_CHECKLIST_INDEX', 'SET_CHECKLIST_CLEAR', 'SET_PLAYLIST_NEWLIST', 'SET_PLAYLIST_ADD', 'SET_CURRENTOPENID', 'SET_CHECKLIST_PLAYLIST_CLEAR', 'SET_CHECKLIST_PLAYLIST_ADD', 'REMOVE_PLAYLIST_INDEX', 'REMOVE_ALLCHECKLIST_INDEX', 'SET_ALLCHECKLIST_PLAYLIST_ADD', 'REMOVE_ALLPLAYLIST_INDEX', 'REMOVE_ALLPLAYLIST_CHECKLIST_INDEX', 'SET_CHECKLIST_ALLPLAYLIST_CLEAR', 'CHANGE_BASELIST_INIT', 'FETCH_RANDOMMUSIC_LIST']),
+        ...mapMutations(['SET_CURRENTMUSIC', 'REMOVE_INDEX', 'SET_CHECKLIST_ADD', 'REMOVE_CHECKLIST_INDEX', 'SET_CHECKLIST_CLEAR', 'SET_PLAYLIST_NEWLIST', 'SET_PLAYLIST_ADD', 'SET_CURRENTOPENID', 'SET_CHECKLIST_PLAYLIST_CLEAR', 'SET_CHECKLIST_PLAYLIST_ADD', 'REMOVE_PLAYLIST_INDEX', 'REMOVE_ALLCHECKLIST_INDEX', 'SET_ALLCHECKLIST_PLAYLIST_ADD', 'REMOVE_ALLPLAYLIST_INDEX', 'REMOVE_ALLPLAYLIST_CHECKLIST_INDEX', 'SET_CHECKLIST_ALLPLAYLIST_CLEAR', 'CHANGE_BASELIST_INIT', 'FETCH_RANDOMMUSIC_LIST', 'CHANGE_BASELIST_RANDOM_INIT']),
         ...mapActions(['FETCH_RANDOMMUSIC']),
         renderOffsetChange () {
             if (this.renderOffset) {
@@ -340,8 +337,7 @@ export default {
         },
         playPlayListShuffle () {
             if (this.allPlayList.get(this.currentOpenId).data === undefined || this.allPlayList.get(this.currentOpenId).data.size === 0) return
-            this.CHANGE_BASELIST_INIT()
-            this.FETCH_RANDOMMUSIC_LIST()
+            this.CHANGE_BASELIST_RANDOM_INIT()
             this.$emit('fromListToController')
         }
     }
