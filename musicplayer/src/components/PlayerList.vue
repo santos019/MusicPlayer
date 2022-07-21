@@ -43,13 +43,15 @@
         <transition name="fade">
           <div v-if="!menuOffset && !playListDetail" class="playerList-list-mylist-list-nowPlayList">
               <div class="playerList-list-mylist-list-fromlistAdd" @click="fromListAdd"> + 새로운 플레이리스트 생성</div>
+              <transition name="fade">
               <div v-if="fromListmakePlstlistTitleOffset" class="playerList-list-mylist-fromList-makeNewList-title">
                 <input v-model="fromNewListTitle" class="playerList-list-mylist-fromList-makeNewList-title-input"/>
                 <div class="playerList-list-mylist-modal-makeNewList-title-add" ><i class="fa-solid fa-circle-check" @click="setListEvnt('fromList')"></i></div>
                 <div class="playerList-list-mylist-modal-makeNewList-title-close"><i class="fa-solid fa-circle-xmark" @click="()=> {fromListmakePlstlistTitleOffset = !fromListmakePlstlistTitleOffset}"></i></div>
             </div>
+            </transition>
             <li v-for="(data, index) in allPlayList" :key="index" class="playerList-list-mylist-list-playlist" >
-               <div v-if="playListOffset" class="playerList-list-mylist-list-checkbox-container"  >
+                <div v-if="playListOffset" class="playerList-list-mylist-list-checkbox-container"  >
                     <input type="checkbox" :value="renderOffset" class="playerList-list-mylist-check" id="player-checkbox"/>
                     <label class="playerList-list-mylist-label" :class="{clickLabel:checkAllList.has(data[0])}" for="player-checkbox" @click="checkEvnt(data)">✔</label>
                 </div>
@@ -65,10 +67,38 @@
                         노래 {{data[1].data === undefined ? 0 : data[1].data.size}} 곡
                         </div>
                     </div>
+                    <i class="fa-solid fa-ellipsis-vertical" @click="modifyPlayListData">
+                      <div v-if="modifyPlayListdataOffset" class="playList-list-mylist-list-remove-modal">
+                          <div class="playList-list-mylist-list-modify unclik" @click="changeModifyPlayListModal">수정하기</div>
+                          <div class="playList-list-mylist-list-detailData unclik" @click="changePlayListDetailModal">상세정보</div>
+                      </div>
+                    </i>
                     <div class="playList-list-mylist-list-remove-container" @click="makeArr(data[0])">
                         <i class="fa-solid fa-x"></i>
                     </div>
-              </div>
+                </div>
+                <div v-if="modifyPlayListModalOffset"  class="playList-list-mylist-list-modify-container unclik" :class="{notOpacity:modifyPlayListModalOffset}">
+                  <div class="playList-list-mylist-list-modify-close" @click="changeModifyPlayListModal">X</div>
+                  <div class="playList-list-mylist-list-modify-title unclik">{{data[1].title}}</div>
+                  <div class="playList-list-mylist-list-modify-body unclik">제목
+                    <input v-model="modifyTitle" class="playList-list-mylist-list-modify-title-input unclik" type="text">
+                  </div>
+                  <div class="playList-list-mylist-list-modify-footer unclik"> 설명
+                    <input v-model="modifyContent" class="playList-list-mylist-list-modify-title-input unclik" type="text">
+                  </div>
+                  <div class="playList-list-mylist-list-modify-confirmBtn unclik" @click="saveModify(data)">저장</div>
+                </div>
+                <div v-if="playListContetModalOffset" class="playList-list-mylist-list-playListDetail-container unclick-2">
+                  <div class="playList-list-mylist-list-playListDetail unclick-2">
+                    <div class="playList-list-mylist-list-playListDetail-close unclick-2" @click="changePlayListDetailModal">X</div>
+                    <div class="playList-list-mylist-list-playListDetail-intro unclick-2">
+                    상세 정보
+                    </div>
+                    <div class="playList-list-mylist-list-playListDetail-content unclick-2">
+                    {{data[1].content}}
+                    </div>
+                  </div>
+                </div>
             </li>
           </div>
         </transition>
@@ -105,7 +135,17 @@
           </div>
           <div class="playerList-list-mylist-modal-makeNewList-lists">
             <li v-for="(data, index) in allPlayList" @click="setListToMusic(data[0])" :key="index" class="playerList-list-mylist-modal-makeNewList-lists-li">
-              {{data[1].title}}
+              <div class="playerList-list-mylist-modal-img-container">
+                <img v-for="(img, index) in getImgs(data[1])" :key="index" :src="img" class="plyerList-list-mylist-list-modal-img-1">
+              </div>
+              <div class="playerList-list-mylist-modal-data-container">
+                <div class="playerList-list-mylist-modal-data-title">
+                  {{data[1].title}}
+                </div>
+                <div class="playerList-list-mylist-modal-data-size">
+                  노래 {{data[1].data === undefined ? 0 : data[1].data.size}} 곡
+                </div>
+              </div>
             </li>
           </div>
         </div>
@@ -119,7 +159,7 @@ import PlayerListList from './PlayerList-list.vue'
 
 export default {
     computed: {
-        ...mapGetters(['baseList', 'currentMusic', 'checkList', 'allPlayListIdList', 'allPlayList', 'currentOpenId', 'checkListPlayList', 'checkAllList'])
+        ...mapGetters(['baseList', 'currentMusic', 'checkList', 'allPlayListIdList', 'allPlayList', 'currentOpenId', 'checkListPlayList', 'checkAllList', 'modifyPlayListdataOffset', 'modifyPlayListModalOffset', 'playListContetModalOffset'])
     },
     components: {
         PlayerListList
@@ -145,6 +185,8 @@ export default {
             renderOffset: false,
             playListDetail: false,
             playListCurrent: [],
+            modifyTitle: '',
+            modifyContent: '',
             menuOffsetStyle: {
                 true: {
                     backgroundColor: '#111111',
@@ -158,8 +200,11 @@ export default {
         }
     },
     methods: {
-        ...mapMutations(['SET_CURRENTMUSIC', 'REMOVE_INDEX', 'SET_CHECKLIST_ADD', 'REMOVE_CHECKLIST_INDEX', 'SET_CHECKLIST_CLEAR', 'SET_PLAYLIST_NEWLIST', 'SET_PLAYLIST_ADD', 'SET_CURRENTOPENID', 'SET_CHECKLIST_PLAYLIST_CLEAR', 'SET_CHECKLIST_PLAYLIST_ADD', 'REMOVE_PLAYLIST_INDEX', 'REMOVE_ALLCHECKLIST_INDEX', 'SET_ALLCHECKLIST_PLAYLIST_ADD', 'REMOVE_ALLPLAYLIST_INDEX', 'REMOVE_ALLPLAYLIST_CHECKLIST_INDEX', 'SET_CHECKLIST_ALLPLAYLIST_CLEAR', 'CHANGE_BASELIST_INIT', 'FETCH_RANDOMMUSIC_LIST', 'CHANGE_BASELIST_RANDOM_INIT']),
+        ...mapMutations(['SET_CURRENTMUSIC', 'CHANGE_MODIFY_MODAL_OFFSET', 'REMOVE_INDEX', 'SET_CHECKLIST_ADD', 'REMOVE_CHECKLIST_INDEX', 'SET_CHECKLIST_CLEAR', 'SET_PLAYLIST_NEWLIST', 'SET_PLAYLIST_ADD', 'SET_CURRENTOPENID', 'SET_CHECKLIST_PLAYLIST_CLEAR', 'SET_CHECKLIST_PLAYLIST_ADD', 'REMOVE_PLAYLIST_INDEX', 'REMOVE_ALLCHECKLIST_INDEX', 'SET_ALLCHECKLIST_PLAYLIST_ADD', 'REMOVE_ALLPLAYLIST_INDEX', 'REMOVE_ALLPLAYLIST_CHECKLIST_INDEX', 'SET_CHECKLIST_ALLPLAYLIST_CLEAR', 'CHANGE_BASELIST_INIT', 'FETCH_RANDOMMUSIC_LIST', 'CHANGE_BASELIST_RANDOM_INIT', 'CHANGE_MODAL_OFFSET', 'SAVE_MODIFY_DATA', 'CHANGE_PLAYLIST_DETAIL_OFFSET']),
         ...mapActions(['FETCH_RANDOMMUSIC']),
+        changeModifyPlayListModal () {
+            this.CHANGE_MODIFY_MODAL_OFFSET(!this.modifyPlayListModalOffset)
+        },
         renderOffsetChange () {
             if (this.renderOffset) {
                 this.renderOffset = false
@@ -339,6 +384,16 @@ export default {
             if (this.allPlayList.get(this.currentOpenId).data === undefined || this.allPlayList.get(this.currentOpenId).data.size === 0) return
             this.CHANGE_BASELIST_RANDOM_INIT()
             this.$emit('fromListToController')
+        },
+        modifyPlayListData () {
+            this.CHANGE_MODAL_OFFSET(!this.modifyPlayListdataOffset)
+        },
+        saveModify (data) {
+            this.SAVE_MODIFY_DATA({ key: data[0], title: this.modifyTitle, content: this.modifyContent })
+            this.CHANGE_MODIFY_MODAL_OFFSET(!this.modifyPlayListModalOffset)
+        },
+        changePlayListDetailModal () {
+            this.CHANGE_PLAYLIST_DETAIL_OFFSET(!this.playListContetModalOffset)
         }
     }
 }
@@ -436,21 +491,22 @@ export default {
 .fade-enter, .fade-leave-to/* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
 }
+.playerList-list-mylist-list-playlist:not(:first-child)::before{
+  cursor: pointer;
+}
 .playerList-list-mylist-list-playlist{
   background-color: #111111;
-  /* display: flex; */
   height: 50px;
   width: 400px;
-
   color: aliceblue;
   list-style: none;
   border-bottom: 1px solid rgb(108, 108, 108);
   display: flex;
-  cursor: pointer;
 }
-.playerList-list-mylist-list-playlist:hover{
+.playerList-list-mylist-list-content:hover{
     opacity: 0.5;
 }
+
 .playerList-list-mylist-list-nowPlayList{
   background-color: #111111;
   height: 250px;
@@ -526,6 +582,7 @@ export default {
   line-height: 3;
   margin-right: 10px;
   color: rgb(201, 195, 195);
+  position: relative;
 }
 input[type="checkbox"]{
     display: none;
@@ -560,7 +617,7 @@ input[type="checkbox"]{
 
 .playerList-list-mylist-list-content{
   color: rgb(167, 167, 167);
-  width: 305px;
+  width: 290px;
   /* margin-left: 10px; */
   padding-left: 5px;
 }
@@ -583,6 +640,7 @@ input[type="checkbox"]{
   list-style: none;
   border-bottom: 0.5px solid rgb(167, 167, 167);
   cursor: pointer;
+  display: flex;
 }
 .playerList-list-mylist-list-nowPlayList-img-container{
   width: 51.17px;
@@ -669,7 +727,7 @@ input[type="checkbox"]{
   display: flex;
 }
 .playerList-list-mylist-fromList-makeNewList-title{
-  background-color: rgb(96, 99, 99);
+  background-color: rgb(59, 59, 59);
   width: 95%;
   margin-left: 2.5%;
   display: flex;
@@ -719,6 +777,160 @@ input[type="checkbox"]{
      width: 384px;
 }
 .widthControl{
-    width: 352px;
+    width: 360px;
+}
+.playerList-list-mylist-modal-img-container{
+  width: 40px;
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #242424;
+  margin-right: 10px;
+}
+.plyerList-list-mylist-list-modal-img-1{
+  width: 20px;
+}
+.playerList-list-mylist-modal-data-container{
+  height: 50px;
+}
+.playerList-list-mylist-modal-data-title{
+  margin-top: 1px;
+  font-size: 16px;
+}
+.playerList-list-mylist-modal-data-size{
+  font-size: 11px;
+}
+.fa-ellipsis-vertical{
+  width: 15px;
+  text-align: center;
+  margin-right: 10px;
+  line-height: 2;
+  position: relative;
+  color: rgb(201, 195, 195);
+}
+.fa-ellipsis-vertica:hover{
+  opacity: 0.5;
+}
+.playList-list-mylist-list-remove-modal{
+  width: 60px;
+  background-color: rgb(110, 110, 110);
+  position: absolute;
+  right:4px;
+  top:25px
+}
+.playList-list-mylist-list-modify{
+  font-size: 11px;
+  text-align: center;
+}
+.playList-list-mylist-list-detailData{
+  font-size: 11px;
+  text-align: center;
+}
+.playList-list-mylist-list-modify:hover, .playList-list-mylist-list-detailData:hover{
+  background-color: #c21e1e;
+}
+.playList-list-mylist-list-modify-container{
+  position: absolute;
+  width: 300px;
+  height: 230px;
+  left: 300px;
+  top: 400px;
+  background-color: rgb(65, 65, 65);
+  z-index: 1000;
+}
+.playList-list-mylist-list-modify-footer{
+  width: 90%;
+  height: 55px;
+  font-size: 15px;
+  margin-top: 14px;
+  margin-left: 5%;
+  background-color: rgb(45, 46, 47);
+  color: rgb(201, 195, 195);
+}
+.playList-list-mylist-list-modify-close{
+  width: 25px;
+  padding: 5px;
+  text-align: center;
+  float: right;
+  font-size: 18px;
+  color: rgb(167, 167, 167);
+}
+.playList-list-mylist-list-modify-close:hover {
+  opacity: 0.5;
+}
+.playList-list-mylist-list-modify-title{
+  width: 260px;
+  height: 35px;
+  line-height: 2;
+  padding-left: 10px;
+  font-size: 18px;
+  /* background-color: #c21e1e; */
+  color: rgb(201, 195, 195);
+  font-weight: 900;
+}
+.playList-list-mylist-list-modify-body{
+  width: 90%;
+  height: 55px;
+  font-size: 15px;
+  margin-top: 14px;
+  margin-left: 5%;
+  color: rgb(201, 195, 195);
+  background-color: rgb(45, 46, 47);
+}
+.playList-list-mylist-list-modify-title-input{
+  width: 96.5%;
+  display: block;
+  /* margin-left: 3.5%; */
+  margin-top: 5px;
+}
+.playList-list-mylist-list-modify-confirmBtn{
+  display: flex;
+  width: 33px;
+  padding: 5px;
+  margin-top: 9px;
+  margin-right: 15px;
+  margin-left: auto;
+  background-color: rgb(232, 230, 230);
+  color: #242424;
+  border-radius: 5px 5px 5px 5px;
+}
+.playList-list-mylist-list-modify-confirmBtn:hover{
+  opacity: 0.5;
+  cursor: pointer;
+}
+.notOpacity{
+  opacity: 1;
+}
+.playList-list-mylist-list-playListDetail-container{
+position: absolute;
+  width: 300px;
+  height: 230px;
+  left: 300px;
+  top: 400px;
+  background-color: rgb(65, 65, 65);
+  z-index: 1000;
+}
+.playList-list-mylist-list-playListDetail-close{
+  width: 25px;
+  padding: 5px;
+  text-align: center;
+  float: right;
+  font-size: 18px;
+  color: rgb(167, 167, 167);
+}
+.playList-list-mylist-list-playListDetail-close:hover{
+  opacity: 0.5;
+}
+.playList-list-mylist-list-playListDetail-intro{
+  /* background-color: aqua; */
+  /* width: 100px; */
+  /* display: block; */
+  padding-top: 7px;
+  padding-left: 15px;
+}
+.playList-list-mylist-list-playListDetail-content{
+  width: 90%;
+  margin-top: 10px;
+  margin-left: 5%;
+  font-size: 15px;
 }
 </style>

@@ -25,7 +25,11 @@ import { SET_CURRNETMUSIC,
     DRAG_BASELIST_REMOVE,
     DRAG_PLAYLIST_CHAGE_INIT,
     CHANGE_BASELIST_RANDOM_INIT,
-    CHANGE_PLAYBUTTON } from './mutation-type'
+    CHANGE_PLAYBUTTON,
+    CHANGE_MODAL_OFFSET,
+    CHANGE_MODIFY_MODAL_OFFSET,
+    SAVE_MODIFY_DATA,
+    CHANGE_PLAYLIST_DETAIL_OFFSET } from './mutation-type'
 import { findNextMusic, findBeforeMusic } from '../lib/index'
 Vue.use(Vuex)
 
@@ -43,9 +47,21 @@ export default new Vuex.Store({
         currentOpenId: 0,
         checkListPlayList: new Map(),
         checkAllList: new Map(),
-        playButton: false
+        playButton: false,
+        modifyPlayListdataOffset: false,
+        modifyPlayListModalOffset: false,
+        playListContetModalOffset: false
     },
     getters: {
+        modifyPlayListdataOffset (state) {
+            return state.modifyPlayListdataOffset
+        },
+        playListContetModalOffset (state) {
+            return state.playListContetModalOffset
+        },
+        modifyPlayListModalOffset (state) {
+            return state.modifyPlayListModalOffset
+        },
         playButton (state) {
             return state.playButton
         },
@@ -78,6 +94,19 @@ export default new Vuex.Store({
         }
     },
     mutations: {
+        [CHANGE_PLAYLIST_DETAIL_OFFSET]: (state, newState) => {
+            state.playListContetModalOffset = newState
+        },
+        [SAVE_MODIFY_DATA]: (state, { key, title, content }) => {
+            state.allPlayList.get(key).title = title
+            state.allPlayList.get(key).content = content
+        },
+        [CHANGE_MODIFY_MODAL_OFFSET]: (state, newState) => {
+            state.modifyPlayListModalOffset = newState
+        },
+        [CHANGE_MODAL_OFFSET]: (state, newState) => {
+            state.modifyPlayListdataOffset = newState
+        },
         [CHANGE_PLAYBUTTON]: (state, newState) => {
             state.playButton = newState
         },
@@ -211,7 +240,7 @@ export default new Vuex.Store({
         //     state.randomList.delete(value)
         // },
         [SET_PLAYLIST_NEWLIST]: (state, title) => {
-            state.allPlayList.set(state.allPlayListIdIndex++, { title })
+            state.allPlayList.set(state.allPlayListIdIndex++, { title, 'content': '' })
         },
         [SET_PLAYLIST_ADD]: (state, id) => {
             // state.checkList.set()

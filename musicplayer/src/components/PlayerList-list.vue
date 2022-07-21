@@ -156,7 +156,6 @@ export default {
     background-color: #3a3a3a;
 }
 .currentMusicSpinner {
-    background: aqua;
     z-index: 999;
 }
 .linespinner-container{
@@ -164,10 +163,10 @@ export default {
 }
 .linespinner {
   width: 7px;
-  height: 30px;
-  top:12px;
+  height: 15px;
+  top:18px;
   left: -30px;
-  background: #74a4ff;
+  background: rgb(240, 74, 74);
   position: absolute;
   animation: linespinner 1s ease-in-out infinite;
   animation-delay: 0.4s;
@@ -179,8 +178,8 @@ export default {
     content: '';
     position: absolute;
     width: 5px;
-    height: 25px;
-    background: #74a4ff;
+    height: 10px;
+    background: rgb(240, 74, 74);
     animation: linespinner 1s ease-in-out infinite;
 }
   .linespinner:before {
@@ -194,9 +193,9 @@ export default {
 
 @keyframes linespinner {
   0%, 100% {
-    background-color: #74a4ff;
-    box-shadow: 0 0 0 #74a4ff, 0 0 0 #74a4ff; }
+    background-color: rgb(238, 45, 45);
+    box-shadow: 0 0 0 rgb(227, 134, 134), 0 0 0 rgb(240, 74, 74); }
   50% {
-    background-color: #0052ec;
-    box-shadow: 0 -2px 0 #0052ec, 0 2px 0 #0052ec; } }
+    background-color: rgb(240, 74, 74);
+    box-shadow: 0 -8px 0 rgb(240, 74, 74), 0 8px 0 rgb(240, 74, 74); } }
 </style>
