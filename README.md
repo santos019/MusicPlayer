@@ -10,3 +10,4 @@
 > <img src="https://img.shields.io/badge/ESLint 5.16.0-4B32C3?style=for-the-badge&logo=ESLint&logoColor=white">
 
 ## Component 설계
+![image](https://https://user-images.githubusercontent.com/85140461/180394123-ca990c94-89b1-43f4-bf83-dfd0855b9d05.png)
