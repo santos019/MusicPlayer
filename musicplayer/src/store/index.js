@@ -29,7 +29,8 @@ import { SET_CURRNETMUSIC,
     CHANGE_MODAL_OFFSET,
     CHANGE_MODIFY_MODAL_OFFSET,
     SAVE_MODIFY_DATA,
-    CHANGE_PLAYLIST_DETAIL_OFFSET } from './mutation-type'
+    CHANGE_PLAYLIST_DETAIL_OFFSET,
+    SET_SEARCHCONTENT } from './mutation-type'
 import { findNextMusic, findBeforeMusic } from '../lib/index'
 Vue.use(Vuex)
 
@@ -50,9 +51,13 @@ export default new Vuex.Store({
         playButton: false,
         modifyPlayListdataOffset: false,
         modifyPlayListModalOffset: false,
-        playListContetModalOffset: false
+        playListContetModalOffset: false,
+        searchText: ''
     },
     getters: {
+        searchText (state) {
+            return state.searchText
+        },
         modifyPlayListdataOffset (state) {
             return state.modifyPlayListdataOffset
         },
@@ -94,6 +99,9 @@ export default new Vuex.Store({
         }
     },
     mutations: {
+        [SET_SEARCHCONTENT]: (state, newState) => {
+            state.searchText = newState
+        },
         [CHANGE_PLAYLIST_DETAIL_OFFSET]: (state, newState) => {
             state.playListContetModalOffset = newState
         },
@@ -113,8 +121,16 @@ export default new Vuex.Store({
         [DRAG_PLAYLIST_CHAGE_INIT]: (state, data) => {
             state.allPlayList.get(state.currentOpenId).data = data
         },
-        [DRAG_BASELIST_CHANGE_INIT]: (state, data) => {
-            state.baseList = data
+        [DRAG_BASELIST_CHANGE_INIT]: (state, { start, newIndex }) => {
+            const arr = state.baseList[start]
+            console.log(arr)
+            if (start < newIndex) {
+                state.baseList.splice(newIndex + 1, 0, arr)
+                state.baseList.splice(start, 1)
+            } else {
+                state.baseList.splice(newIndex, 0, arr)
+                state.baseList.splice(start + 1, 1)
+            }
             const index = state.baseList.findIndex((el) => el.id === state.currentMusic.musicData.id)
             state.currentMusic.musicIndex = index
         },

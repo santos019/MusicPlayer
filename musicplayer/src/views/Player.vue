@@ -48,11 +48,12 @@ export default {
             console.log('playButton', playButton)
         },
         detailDataModalClose (event) {
+            // console.log(event)
             if (this.modifyPlayListdataOffset && event.target.className !== 'fa-solid fa-ellipsis-vertical') {
                 this.CHANGE_MODAL_OFFSET(!this.modifyPlayListdataOffset)
             } else if (this.modifyPlayListModalOffset && !event.target.classList.contains('unclik')) {
                 this.CHANGE_MODIFY_MODAL_OFFSET(!this.modifyPlayListModalOffset)
-            } else if (this.playListContetModalOffset && !event.target.classList.contains('unclick-2')) {
+            } else if (this.playListContetModalOffset && !event.target.classList.contains('unclick-2') && !event.target.classList.contains('unclik')) {
                 this.CHANGE_PLAYLIST_DETAIL_OFFSET(!this.playListContetModalOffset)
             }
         }

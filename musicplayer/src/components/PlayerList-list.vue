@@ -4,7 +4,8 @@
          @dragenter.prevent
          @dragover.prevent
          @dragstart="startDrag($event, index, data)"
-         :key="`${index}${propsChange}`" class="playerList-list-mylist-list-lists" :class="{currentMusic:data.id === currentMusic.musicData.id}">
+         :key="`${index}${propsChange}`"
+         :id="`${data.id}`" class="playerList-list-mylist-list-lists" :class="{currentMusic:data.id === currentMusic.musicData.id}">
             <transition name="fadeList">
                 <div v-if="currentListOffset" class="playerList-list-mylist-list-checkbox-container"  >
                     <input type="checkbox" :value="propsChange"  class="playerList-list-mylist-check" id="player-checkbox"/>
@@ -50,28 +51,22 @@ export default {
     methods: {
         ...mapMutations(['DRAG_PLAYLIST_CHAGE_INIT', 'DRAG_BASELIST_CHANGE_INIT', 'DRAG_BASELIST_REMOVE', 'SET_CURRENTMUSIC', 'REMOVE_INDEX', 'SET_CHECKLIST_ADD', 'REMOVE_CHECKLIST_INDEX', 'SET_CHECKLIST_CLEAR', 'SET_PLAYLIST_NEWLIST', 'SET_PLAYLIST_ADD', 'REMOVE_CHECKLIST_PLAYLIST_INDEX', 'SET_CHECKLIST_PLAYLIST_ADD', 'REMOVE_PLAYLIST_INDEX']),
         onDrop (event, index, data) {
-            console.log('ondrop', event)
-            console.log('ondropData', index)
+            // console.log('ondrop', this.startDropItem)
+            // console.log('ondropData', index)
+            console.log('start', event.offsetY)
+            let newIndex = Number(index)
+            if (event.offsetY >= 45) {
+                newIndex = Number(index + 1)
+            }
+            console.log('newIndex', newIndex)
             if (this.listName === 'baselist') {
-                const arr = []
-                for (const value in this.baseList) {
-                    if (Number(value) === Number(this.startDropItem)) {
-                        continue
-                    }
-                    if (Number(value) === Number(index)) {
-                        arr.push(this.baseList[this.startDropItem])
-                    }
-                    arr.push(this.baseList[value])
-                }
-                console.log('arr', arr)
-                // this.DRAG_BASELIST_REMOVE(this.startDropItem)
-                this.DRAG_BASELIST_CHANGE_INIT(arr)
+                this.DRAG_BASELIST_CHANGE_INIT({ start: this.startDropItem, newIndex })
             } else {
                 const arr = new Map()
                 const Data = this.allPlayList.get(this.currentOpenId).data
-                console.log('Data', Data)
+                // console.log('Data', Data)
                 const addData = Data.get(this.startDropItem)
-                console.log('addData', addData)
+                // console.log('addData', addData)
                 let cnt = 0
                 for (const [key, value] of Data.entries()) {
                     if (Number(key) === Number(addData.id)) {

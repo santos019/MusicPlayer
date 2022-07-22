@@ -30,7 +30,7 @@
         <i class="fa-brands fa-sistrix"></i>
       </div>
       <transition name="fade">
-       <input v-show="searchOffset" class="playerList-list-sidemenu-search-box"/>
+       <input v-show="searchOffset" :value="searchText" ref="searchInput" @input="changeSearchText($event)" type="text" class="playerList-list-sidemenu-search-box"/>
       </transition>
     </div>
     <div class="playerList-list-mylist-container">
@@ -69,15 +69,15 @@
                     </div>
                     <i class="fa-solid fa-ellipsis-vertical" @click="modifyPlayListData">
                       <div v-if="modifyPlayListdataOffset" class="playList-list-mylist-list-remove-modal">
-                          <div class="playList-list-mylist-list-modify unclik" @click="changeModifyPlayListModal">수정하기</div>
+                          <div class="playList-list-mylist-list-modify unclik" @click="changeModifyPlayListModal(data)">수정하기</div>
                           <div class="playList-list-mylist-list-detailData unclik" @click="changePlayListDetailModal">상세정보</div>
                       </div>
                     </i>
-                    <div class="playList-list-mylist-list-remove-container" @click="makeArr(data[0])">
+                    <div class="playList-list-mylist-list-remove-container" :key="`${index}${renderOffset}`" @click="makeArr(data[0])">
                         <i class="fa-solid fa-x"></i>
                     </div>
                 </div>
-                <div v-if="modifyPlayListModalOffset"  class="playList-list-mylist-list-modify-container unclik" :class="{notOpacity:modifyPlayListModalOffset}">
+                <div v-if="modifyPlayListModalOffset"  class="playList-list-mylist-list-modify-container unclik">
                   <div class="playList-list-mylist-list-modify-close" @click="changeModifyPlayListModal">X</div>
                   <div class="playList-list-mylist-list-modify-title unclik">{{data[1].title}}</div>
                   <div class="playList-list-mylist-list-modify-body unclik">제목
@@ -159,7 +159,7 @@ import PlayerListList from './PlayerList-list.vue'
 
 export default {
     computed: {
-        ...mapGetters(['baseList', 'currentMusic', 'checkList', 'allPlayListIdList', 'allPlayList', 'currentOpenId', 'checkListPlayList', 'checkAllList', 'modifyPlayListdataOffset', 'modifyPlayListModalOffset', 'playListContetModalOffset'])
+        ...mapGetters(['baseList', 'currentMusic', 'checkList', 'allPlayListIdList', 'allPlayList', 'currentOpenId', 'checkListPlayList', 'checkAllList', 'modifyPlayListdataOffset', 'modifyPlayListModalOffset', 'playListContetModalOffset', 'searchText'])
     },
     components: {
         PlayerListList
@@ -200,9 +200,12 @@ export default {
         }
     },
     methods: {
-        ...mapMutations(['SET_CURRENTMUSIC', 'CHANGE_MODIFY_MODAL_OFFSET', 'REMOVE_INDEX', 'SET_CHECKLIST_ADD', 'REMOVE_CHECKLIST_INDEX', 'SET_CHECKLIST_CLEAR', 'SET_PLAYLIST_NEWLIST', 'SET_PLAYLIST_ADD', 'SET_CURRENTOPENID', 'SET_CHECKLIST_PLAYLIST_CLEAR', 'SET_CHECKLIST_PLAYLIST_ADD', 'REMOVE_PLAYLIST_INDEX', 'REMOVE_ALLCHECKLIST_INDEX', 'SET_ALLCHECKLIST_PLAYLIST_ADD', 'REMOVE_ALLPLAYLIST_INDEX', 'REMOVE_ALLPLAYLIST_CHECKLIST_INDEX', 'SET_CHECKLIST_ALLPLAYLIST_CLEAR', 'CHANGE_BASELIST_INIT', 'FETCH_RANDOMMUSIC_LIST', 'CHANGE_BASELIST_RANDOM_INIT', 'CHANGE_MODAL_OFFSET', 'SAVE_MODIFY_DATA', 'CHANGE_PLAYLIST_DETAIL_OFFSET']),
+        ...mapMutations(['SET_CURRENTMUSIC', 'CHANGE_MODIFY_MODAL_OFFSET', 'REMOVE_INDEX', 'SET_CHECKLIST_ADD', 'REMOVE_CHECKLIST_INDEX', 'SET_CHECKLIST_CLEAR', 'SET_PLAYLIST_NEWLIST', 'SET_PLAYLIST_ADD', 'SET_CURRENTOPENID', 'SET_CHECKLIST_PLAYLIST_CLEAR', 'SET_CHECKLIST_PLAYLIST_ADD', 'REMOVE_PLAYLIST_INDEX', 'REMOVE_ALLCHECKLIST_INDEX', 'SET_ALLCHECKLIST_PLAYLIST_ADD', 'REMOVE_ALLPLAYLIST_INDEX', 'REMOVE_ALLPLAYLIST_CHECKLIST_INDEX', 'SET_CHECKLIST_ALLPLAYLIST_CLEAR', 'CHANGE_BASELIST_INIT', 'FETCH_RANDOMMUSIC_LIST', 'CHANGE_BASELIST_RANDOM_INIT', 'CHANGE_MODAL_OFFSET', 'SAVE_MODIFY_DATA', 'CHANGE_PLAYLIST_DETAIL_OFFSET', 'SET_SEARCHCONTENT']),
         ...mapActions(['FETCH_RANDOMMUSIC']),
-        changeModifyPlayListModal () {
+        changeModifyPlayListModal (data) {
+            if (data[1].title) {
+                this.modifyTitle = data[1].title
+            }
             this.CHANGE_MODIFY_MODAL_OFFSET(!this.modifyPlayListModalOffset)
         },
         renderOffsetChange () {
@@ -213,7 +216,6 @@ export default {
             }
         },
         makeArr (data) {
-            console.log('data', data)
             const obj = new Map()
             console.log('makeass', obj)
             obj.set(data, true)
@@ -394,6 +396,27 @@ export default {
         },
         changePlayListDetailModal () {
             this.CHANGE_PLAYLIST_DETAIL_OFFSET(!this.playListContetModalOffset)
+        },
+        changeSearchText (event) {
+            setTimeout(() => {
+                if (this.menuOffset) {
+                    let findId
+                    for (const value of this.baseList) {
+                        if (value.title.includes(this.searchText)) {
+                            console.log(value.title)
+                            findId = value.id
+                            window.location.href = `#${findId}`
+                            this.$refs.searchInput.focus()
+                            return
+                        }
+                    }
+                }
+            }, 1000)
+            this.SET_SEARCHCONTENT(event.target.value)
+        },
+        changeSearchOffset () {
+            this.searchText = ''
+            this.searchOffset = !this.searchOffset
         }
     }
 }
@@ -788,12 +811,13 @@ input[type="checkbox"]{
 }
 .plyerList-list-mylist-list-modal-img-1{
   width: 20px;
+  height: 20px;
 }
 .playerList-list-mylist-modal-data-container{
-  height: 50px;
+  height: 40px;
 }
 .playerList-list-mylist-modal-data-title{
-  margin-top: 1px;
+  margin-top: -3px;
   font-size: 16px;
 }
 .playerList-list-mylist-modal-data-size{
